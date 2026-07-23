@@ -34,6 +34,13 @@ carryctx task claim CTX-NNNN            # assign to yourself
 carryctx task start CTX-NNNN            # mark in-progress
 ```
 
+**Task Completion and Cleanup**: When you finish a task, complete it and clean up its associated worktree (if any) to prevent disk bloat:
+```bash
+carryctx task complete CTX-NNNN
+# If you used a separate worktree for this task:
+# git worktree remove .worktrees/CTX-NNNN
+```
+
 ## Logging Progress
 
 Log significant steps continuously — do not accumulate changes in implicit memory:

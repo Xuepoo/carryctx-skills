@@ -75,6 +75,8 @@ carryctx task start CTX-0001
 
 # Mark task finished after verification
 carryctx task complete CTX-0001
+# Clean up the worktree to save disk space if one was created
+# git worktree remove .worktrees/CTX-0001
 ```
 
 ### 3. Granular Progress Tracking
