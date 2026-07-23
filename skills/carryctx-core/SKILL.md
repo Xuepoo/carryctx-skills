@@ -1,13 +1,13 @@
 ---
-name: carryctx
-description: Persistent project context and continuity manager for coding agents. Helps agents manage structured tasks, track progress, save checkpoints, maintain context across sessions and Git worktrees, generate shell completions, and integrate Git hooks. Use when starting work, tracking task progress, creating checkpoints, switching worktrees, restoring project state, or diagnosing project health.
+name: carryctx-core
+description: Core CarryCtx capability. Persistent project context and continuity manager for coding agents. Helps agents manage structured tasks, track progress, save checkpoints, maintain context across sessions and Git worktrees. Use when starting work, tracking task progress, creating checkpoints, switching worktrees, or restoring project state.
 license: MIT
 metadata:
   author: Xuepoo
   version: "0.2.0"
 ---
 
-# CarryCtx Agent Skill
+# CarryCtx Core Skill
 
 CarryCtx provides first-class project state and context continuity for AI coding agents. It enables agents to manage tasks, track granular progress, create checkpoint snapshots, and seamlessly preserve context across session restarts, window changes, and Git worktrees.
 

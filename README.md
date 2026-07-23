@@ -1,55 +1,51 @@
 # CarryCtx Agent Skills
 
-Agent skills repository for [CarryCtx](https://github.com/Xuepoo/carryctx) — a local-first project state and continuity manager for coding agents.
+Agent skills collection for [CarryCtx](https://github.com/Xuepoo/carryctx) — a local-first project state and continuity manager for coding agents.
 
-This repository provides first-class CarryCtx awareness to AI coding agents (such as Antigravity, Claude Code, Cursor, Cline, etc.).
+This repository provides modular, first-class CarryCtx awareness to AI coding agents (such as Antigravity, Claude Code, Cursor, Cline, etc.). Install only the skills you need.
 
 ## Installation
 
-Install the CarryCtx skill into your agent environment using the official `skills` CLI tool:
+Install CarryCtx skills into your agent environment using the official `skills` CLI tool:
 
 ### Via `npx skills` (Recommended)
 
 ```bash
-# Add to project scope
-npx skills add Xuepoo/carryctx-skills -y
+# Add the Core CLI capability
+npx skills add https://github.com/Xuepoo/carryctx-skills --skill carryctx-core
 
-# Or specify by full URL
-npx skills add https://github.com/Xuepoo/carryctx-skills --skill carryctx
-
-# Add globally (user-level)
-npx skills add Xuepoo/carryctx-skills -g -y
-```
-
-### Via `skills` CLI (if installed globally)
-
-```bash
-skills add Xuepoo/carryctx-skills -y
+# Add other capabilities as needed:
+npx skills add https://github.com/Xuepoo/carryctx-skills --skill carryctx-rules
+npx skills add https://github.com/Xuepoo/carryctx-skills --skill carryctx-workflows
+npx skills add https://github.com/Xuepoo/carryctx-skills --skill carryctx-personas
 ```
 
 ## Available Skills
 
-| Skill | Description | Location |
-|-------|-------------|----------|
-| **`carryctx`** | Preserves and restores project context, manages tasks, tracks progress, and saves checkpoints across agent sessions. | [`skills/carryctx/`](skills/carryctx/) |
+| Skill | Description | Location | Status |
+|-------|-------------|----------|--------|
+| **`carryctx-core`** | Preserves and restores project context, manages tasks, tracks progress, and saves checkpoints across agent sessions. | [`skills/carryctx-core/`](skills/carryctx-core/) | Available |
+| **`carryctx-rules`** | Teaches the agent to dynamically load and obey project-specific `.carryctx/rules/`. | [`skills/carryctx-rules/`](skills/carryctx-rules/) | *Planned* |
+| **`carryctx-workflows`** | Parses `.carryctx/workflows/` blueprints and automatically breaks down tasks into granular todo lists. | [`skills/carryctx-workflows/`](skills/carryctx-workflows/) | *Planned* |
+| **`carryctx-personas`** | Enables agents to adopt `.carryctx/personas/` (e.g., Code Reviewer, Architect) and enforce specific code styles. | [`skills/carryctx-personas/`](skills/carryctx-personas/) | *Planned* |
 
 ## Skill Structure
 
-```
+```text
 carryctx-skills/
 ├── README.md
 ├── LICENSE
 └── skills/
-    └── carryctx/
-        ├── SKILL.md
-        ├── references/
-        │   ├── checkpoint-policy.md
-        │   ├── session-lifecycle.md
-        │   ├── task-workflow.md
-        │   └── troubleshooting.md
-        └── scripts/
-            ├── create-checkpoint.sh
-            └── start-session.sh
+    ├── carryctx-core/        # Basic CLI wrapping
+    │   ├── SKILL.md
+    │   ├── references/
+    │   └── scripts/
+    ├── carryctx-personas/    # Agent role adoption
+    │   └── SKILL.md
+    ├── carryctx-rules/       # Context-aware rule loading
+    │   └── SKILL.md
+    └── carryctx-workflows/   # Blueprint parsing
+        └── SKILL.md
 ```
 
 ## License
