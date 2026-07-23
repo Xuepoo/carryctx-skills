@@ -1,3 +1,8 @@
+---
+name: carryctx
+description: Helps coding agents persist and restore project context across sessions, manage tasks, track progress, and coordinate work across Git worktrees.
+---
+
 # CarryCtx Agent Skill
 
 Helps coding agents persist and restore project context across sessions, manage tasks, track progress, and coordinate work across Git worktrees.
