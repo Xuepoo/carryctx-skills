@@ -1,5 +1,17 @@
 # CarryCtx Skills
 
-Reserved for standalone and provider-specific CarryCtx Agent Skills.
+Agent skills and documentation for using CarryCtx in coding-agent workflows.
 
-The generic v0.1 skill is initially bundled by the CLI package; this repository becomes active after the CLI workflow is stable.
+## Contents
+
+- `SKILL.md` — Main skill manifest and quick-start guide
+- `references/` — Detailed reference documentation
+- `scripts/` — Helper scripts for agent workflows
+
+## Usage
+
+Load this skill in your agent to enable CarryCtx-aware task management, session continuity, and project context preservation.
+
+## License
+
+MIT
