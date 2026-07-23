@@ -9,9 +9,12 @@ metadata:
 
 # CarryCtx Personas Skill
 
-This skill teaches the Agent how to adopt highly specific roles/personas defined by the project team.
+This skill allows you to dynamically adopt different roles, strictness levels, or "personas" based on the project's configurations.
 
-## How it works (Future Implementation)
-When fully implemented:
-1. Projects can define personas in `.carryctx/personas/reviewer.toml` or `architect.toml`.
-2. The Agent can be instructed to "Act as the Architect" or "Review this code using the Reviewer persona", instantly applying the project's custom system prompt modifiers.
+## Instructions for the Agent
+
+1. **Persona Discovery**: Be aware that the project may define specific AI personas in the `.carryctx/personas/` directory (e.g., `reviewer.md`, `architect.md`, `qa-engineer.md`).
+2. **Role Adoption**: When explicitly asked by the user to adopt a persona (e.g., "Act as the Architect"), or when your current task strongly aligns with a specific persona (e.g., you are asked to rigorously review a Pull Request), immediately read the corresponding persona file.
+3. **Behavior Modification**: Adjust your communication style, reasoning process, strictness, and output format to exactly match the persona's definition. 
+   - *Example*: If acting as a strict Security Reviewer, prioritize pointing out vulnerabilities over code style, and refuse to approve code that lacks input validation.
+4. **Persistence**: Maintain this persona for the duration of the task or until the user instructs you to revert to your default behavior.

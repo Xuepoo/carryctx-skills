@@ -9,9 +9,11 @@ metadata:
 
 # CarryCtx Rules Skill
 
-This skill teaches the Agent how to interpret and apply dynamic rules defined within the project.
+This skill enforces context-aware, domain-specific rules defined by the project team. It ensures you (the Agent) do not guess formatting, architectural conventions, or library choices, but instead read the project's source of truth.
 
-## How it works (Future Implementation)
-When this skill is fully implemented, agents will be instructed to:
-1. Upon starting a task, check `.carryctx/rules/` for relevant domain instructions (e.g., `frontend.md`, `database.md`).
-2. Automatically incorporate those rules into their context to ensure compliance with project standards.
+## Instructions for the Agent
+
+1. **Rule Discovery**: At the beginning of any new task, check if the project contains a `.carryctx/rules/` directory. If it exists, list its contents to find rule files that might be relevant to your current assignment.
+2. **Context Injection**: If a rule file matches your current task domain (e.g., `frontend.md` for UI work, `database.md` for SQL/schema tasks, `security.md` for authentication), read its contents immediately before making any code changes.
+3. **Strict Adherence**: Treat the contents of the read rule files as **absolute constraints**. Do not deviate from the specified conventions.
+4. **Handoff**: If you need to delegate sub-tasks to a subagent, explicitly pass the relevant rule file paths to them so they are also bound by the same project rules.

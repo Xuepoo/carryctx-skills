@@ -36,9 +36,9 @@ npx skills add https://github.com/Xuepoo/carryctx-skills --skill carryctx-person
 | Skill | Description | Location | Status |
 |-------|-------------|----------|--------|
 | **`carryctx-core`** | Preserves and restores project context, manages tasks, tracks progress, and saves checkpoints across agent sessions. | [`skills/carryctx-core/`](skills/carryctx-core/) | Available |
-| **`carryctx-rules`** | Teaches the agent to dynamically load and obey project-specific `.carryctx/rules/`. | [`skills/carryctx-rules/`](skills/carryctx-rules/) | *Planned* |
-| **`carryctx-workflows`** | Parses `.carryctx/workflows/` blueprints and automatically breaks down tasks into granular todo lists. | [`skills/carryctx-workflows/`](skills/carryctx-workflows/) | *Planned* |
-| **`carryctx-personas`** | Enables agents to adopt `.carryctx/personas/` (e.g., Code Reviewer, Architect) and enforce specific code styles. | [`skills/carryctx-personas/`](skills/carryctx-personas/) | *Planned* |
+| **`carryctx-rules`** | Teaches the agent to dynamically load and obey project-specific `.carryctx/rules/`. | [`skills/carryctx-rules/`](skills/carryctx-rules/) | Available |
+| **`carryctx-workflows`** | Parses `.carryctx/workflows/` blueprints and automatically breaks down tasks into granular todo lists. | [`skills/carryctx-workflows/`](skills/carryctx-workflows/) | Available |
+| **`carryctx-personas`** | Enables agents to adopt `.carryctx/personas/` (e.g., Code Reviewer, Architect) and enforce specific code styles. | [`skills/carryctx-personas/`](skills/carryctx-personas/) | Available |
 
 ## Skill Structure
 
