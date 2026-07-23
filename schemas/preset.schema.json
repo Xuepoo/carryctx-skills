@@ -1,0 +1,136 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://carryctx.dev/schemas/preset.schema.json",
+  "title": "CarryCtx Preset Manifest",
+  "description": "Schema for CarryCtx Capability Packs (Presets) following a package.json style.",
+  "type": "object",
+  "required": ["name", "version", "description", "carryctx", "permissions"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The unique name of the preset, typically lowercase with hyphens (e.g., carryctx-preset-rust-cli).",
+      "pattern": "^[a-z0-9-_]+$"
+    },
+    "version": {
+      "type": "string",
+      "description": "Semver version of the preset (e.g., 1.0.0).",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "description": {
+      "type": "string",
+      "description": "A short, readable description of the preset's purpose."
+    },
+    "author": {
+      "type": "string",
+      "description": "The author or organization publishing the preset."
+    },
+    "license": {
+      "type": "string",
+      "description": "The license of the preset (e.g., MIT)."
+    },
+    "carryctx": {
+      "type": "object",
+      "description": "Engine requirements for CarryCtx.",
+      "required": ["engine"],
+      "properties": {
+        "engine": {
+          "type": "string",
+          "description": "Semver range for the supported carryctx-cli version (e.g., >=0.2.0)."
+        }
+      }
+    },
+    "profiles": {
+      "type": "object",
+      "description": "Agent capability profiles dictating review standards and output structures.",
+      "additionalProperties": {
+        "type": "string",
+        "description": "Relative path to the profile markdown file (e.g., profiles/reviewer.md)."
+      }
+    },
+    "rules": {
+      "type": "array",
+      "description": "List of relative paths to absolute project constraints and rules.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "workflows": {
+      "type": "object",
+      "description": "Standard Operating Procedures mapping intent to workflow files.",
+      "additionalProperties": {
+        "type": "string",
+        "description": "Relative path to the workflow YAML/Markdown file."
+      }
+    },
+    "skills": {
+      "type": "array",
+      "description": "List of base carryctx skills this preset depends on.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "activation": {
+      "type": "object",
+      "description": "Conditions for automatically recommending or activating this preset.",
+      "properties": {
+        "filePatterns": {
+          "type": "array",
+          "description": "Glob patterns indicating relevant project types (e.g., Cargo.toml).",
+          "items": {
+            "type": "string"
+          }
+        },
+        "intents": {
+          "type": "array",
+          "description": "Task intents that should trigger this preset (e.g., implement, review).",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "permissions": {
+      "type": "object",
+      "description": "Crucial supply-chain security constraints defining what this preset is allowed to do.",
+      "properties": {
+        "filesystem": {
+          "type": "array",
+          "description": "Allowed filesystem access paths (e.g., ['workspace']).",
+          "items": {
+            "type": "string"
+          }
+        },
+        "shell": {
+          "type": "array",
+          "description": "Allowed shell commands the agent can execute autonomously (e.g., ['cargo', 'git']).",
+          "items": {
+            "type": "string"
+          }
+        },
+        "network": {
+          "type": "array",
+          "description": "Allowed domains for external network access.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dangerous": {
+          "type": "object",
+          "description": "Policies for dangerous actions.",
+          "properties": {
+            "gitPush": {
+              "type": "string",
+              "enum": ["allow", "confirm", "deny"],
+              "default": "confirm"
+            },
+            "publishPackage": {
+              "type": "string",
+              "enum": ["allow", "confirm", "deny"],
+              "default": "confirm"
+            }
+          }
+        }
+      }
+    }
+  }
+}
