@@ -122,3 +122,61 @@ carryctx worktree prune
 ```
 
 This scans all tracked worktrees, verifies they still exist, and removes missing ones from the database.
+
+## Doctor Diagnostics
+
+When you are unsure what is wrong, run the full diagnostic suite:
+
+```bash
+carryctx doctor
+```
+
+Output icons:
+- `✓` — check passed
+- `·` — informational (no action required)
+- `⚠` — warning — something may need attention
+- `✗` — error — action required
+
+Common doctor findings:
+
+| Finding | Meaning | Fix |
+|---------|---------|-----|
+| `No CarryCtx git hooks installed` | Hooks not set up | `carryctx hooks install` |
+| `N task(s) have deleted owners` | Agent was removed but still owns tasks | `carryctx task unclaim <id>` |
+| `Cannot open project` | DB missing or git not initialised | `carryctx init` |
+| `No active session` | No session running | `carryctx session start` |
+
+For machine-readable output (e.g. in CI): `carryctx doctor --json`
+
+## Git Hooks Not Working
+
+**Symptom**: Commits do not create checkpoints or prepend task IDs to commit messages.
+
+**Cause**: CarryCtx hooks are not installed, or were overwritten by another tool.
+
+**Resolution**:
+
+```bash
+carryctx hooks status   # check which hooks exist and whether CarryCtx manages them
+carryctx hooks install --force  # reinstall (backs up existing hooks to .bak)
+```
+
+To verify a hook is managed by CarryCtx: `grep "CarryCtx" .git/hooks/post-commit`
+
+## Completions Not Working
+
+**Symptom**: Tab-completion for `carryctx` does not work in the shell.
+
+**Resolution**: Re-run the one-time setup for your shell:
+
+```bash
+# Bash
+carryctx completions bash >> ~/.bash_completion.d/carryctx
+source ~/.bash_completion.d/carryctx
+
+# Zsh
+echo 'eval "$(carryctx completions zsh)"' >> ~/.zshrc && source ~/.zshrc
+
+# Fish
+carryctx completions fish > ~/.config/fish/completions/carryctx.fish
+```

@@ -1,6 +1,6 @@
 ---
 name: carryctx
-description: Persistent project context and continuity manager for coding agents. Helps agents manage structured tasks, track progress, save checkpoints, and maintain context across sessions and Git worktrees. Use when starting work, tracking task progress, creating checkpoints, switching worktrees, or restoring project state.
+description: Persistent project context and continuity manager for coding agents. Helps agents manage structured tasks, track progress, save checkpoints, maintain context across sessions and Git worktrees, generate shell completions, and integrate Git hooks. Use when starting work, tracking task progress, creating checkpoints, switching worktrees, restoring project state, or diagnosing project health.
 license: MIT
 metadata:
   author: Xuepoo
@@ -20,6 +20,9 @@ Use CarryCtx commands when:
 - **Saving state / Checkpointing**: Capture current work progress, git status, and remaining work before ending sessions or switching focus.
 - **Parallel task work**: Create and isolate tasks in dedicated Git worktrees without context collision.
 - **Context restoration**: Query relevance-ordered project state (`carryctx resume` or `carryctx status`).
+- **Diagnosing health issues**: Run `carryctx doctor` to surface orphaned tasks, missing hooks, and DB problems.
+- **Setting up shell completions**: Run `carryctx completions <shell>` once per machine for tab-completion.
+- **Installing git hooks**: Run `carryctx hooks install` to auto-checkpoint on every commit.
 
 ## Prerequisites
 
@@ -29,7 +32,7 @@ Use CarryCtx commands when:
 ## Quick Reference
 
 | Action | Command | Purpose |
-|--------|---------|---------|
+|--------|---------|---------| 
 | **Agent Setup** | `carryctx agent register --name "$(whoami)" --provider "claude-code"` | Register agent identity |
 | **Current Agent** | `carryctx agent current --name "$(whoami)"` | Set active agent |
 | **Start Session** | `carryctx session start` | Begin tracked working session |
@@ -41,6 +44,9 @@ Use CarryCtx commands when:
 | **Checkpoint** | `carryctx checkpoint --done "..." --remaining "..."` | Save semantically rich state snapshot |
 | **Worktree** | `carryctx worktree create --task CTX-0001` | Create isolated git worktree for task |
 | **End Session** | `carryctx session end` | Safely end session with checkpoint |
+| **Doctor** | `carryctx doctor` | Diagnose project health |
+| **Install Hooks** | `carryctx hooks install` | Auto-checkpoint on every git commit |
+| **Shell Completions** | `carryctx completions <shell>` | Enable tab-completion |
 
 ## Standard Agent Workflow
 
@@ -109,9 +115,57 @@ carryctx worktree create --task CTX-0002
 carryctx session end
 ```
 
+### 7. Diagnosing Project Health
+
+Run `carryctx doctor` after upgrades, after switching machines, or when commands behave unexpectedly:
+
+```bash
+carryctx doctor           # human-readable diagnostics with fix hints
+carryctx doctor --json    # machine-readable output
+carryctx doctor --fix     # attempt automatic repairs
+```
+
+Doctor checks:
+- Global config validity
+- Git repository connectivity
+- CarryCtx git hook installation
+- SQLite database connection and schema version
+- Orphaned tasks (tasks whose owner agent no longer exists)
+- Active session count
+
+### 8. Git Hooks Integration (optional, recommended)
+
+Install once per repository to auto-checkpoint on every commit and prefix commit messages with the active task ID:
+
+```bash
+carryctx hooks install            # installs post-commit + prepare-commit-msg
+carryctx hooks install --force    # overwrite existing hooks (backs up originals)
+carryctx hooks status             # verify installed hooks
+carryctx hooks uninstall          # remove CarryCtx hooks
+carryctx hooks uninstall --restore  # restore original hooks from .bak
+```
+
+### 9. Shell Tab-Completion (one-time setup per machine)
+
+```bash
+# Bash
+carryctx completions bash >> ~/.bash_completion.d/carryctx
+
+# Zsh (add to ~/.zshrc)
+eval "$(carryctx completions zsh)"
+
+# Fish
+carryctx completions fish > ~/.config/fish/completions/carryctx.fish
+
+# PowerShell
+carryctx completions powershell | Out-String | Invoke-Expression
+```
+
 ## Best Practices for Coding Agents
 
 1. **Always run `carryctx resume` when starting**: Re-orients agent to current task and progress immediately.
 2. **Explicitly claim tasks**: Prevents duplicate execution when multiple agents work on the same repository.
 3. **Use structured progress items**: Keep `todo`, `done`, and `block` updated during execution steps.
 4. **Checkpoint before stopping**: Always create a checkpoint before yielding control or completing complex multi-step work.
+5. **Run `carryctx doctor` on first use or after upgrade**: Surfaces setup gaps before they cause runtime errors.
+6. **Install git hooks on project setup**: `carryctx hooks install` ensures every commit automatically captures a checkpoint without manual intervention.
