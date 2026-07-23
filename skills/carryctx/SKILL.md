@@ -4,7 +4,7 @@ description: Persistent project context and continuity manager for coding agents
 license: MIT
 metadata:
   author: Xuepoo
-  version: "0.1.0"
+  version: "0.2.0"
 ---
 
 # CarryCtx Agent Skill
@@ -23,6 +23,9 @@ Use CarryCtx commands when:
 - **Diagnosing health issues**: Run `carryctx doctor` to surface orphaned tasks, missing hooks, and DB problems.
 - **Setting up shell completions**: Run `carryctx completions <shell>` once per machine for tab-completion.
 - **Installing git hooks**: Run `carryctx hooks install` to auto-checkpoint on every commit.
+- **Pruning old data**: Use `carryctx project prune` to clean up completed tasks and keep the DB lightweight.
+- **Remote Synchronization**: Use `carryctx sync push` or `pull` to sync state across machines or branches.
+- **Agent Analytics**: Use `carryctx stats` to audit agent session lengths and task metrics.
 
 ## Prerequisites
 
@@ -47,6 +50,9 @@ Use CarryCtx commands when:
 | **Doctor** | `carryctx doctor` | Diagnose project health |
 | **Install Hooks** | `carryctx hooks install` | Auto-checkpoint on every git commit |
 | **Shell Completions** | `carryctx completions <shell>` | Enable tab-completion |
+| **Prune Data** | `carryctx project prune --older-than 30` | Clean up old completed tasks |
+| **Sync State** | `carryctx sync push/pull --remote <path>` | Synchronize DB state with a remote |
+| **Agent Stats** | `carryctx stats` | View agent session time and performance metrics |
 
 ## Standard Agent Workflow
 
@@ -147,7 +153,23 @@ carryctx hooks uninstall          # remove CarryCtx hooks
 carryctx hooks uninstall --restore  # restore original hooks from .bak
 ```
 
-### 9. Shell Tab-Completion (one-time setup per machine)
+### 9. Project Maintenance, Sync, and Auditing
+
+For long-running projects, you can use advanced commands to maintain a clean database and measure metrics:
+
+```bash
+# Prune completed tasks older than 30 days
+carryctx project prune --older-than 30
+
+# Sync the SQLite state DB to a remote backend (e.g. /tmp/remote-store)
+carryctx sync push --remote /tmp/remote-store
+carryctx sync pull --remote /tmp/remote-store
+
+# View analytics and session time for agents
+carryctx stats
+```
+
+### 10. Shell Tab-Completion (one-time setup per machine)
 
 ```bash
 # Bash
