@@ -1,6 +1,6 @@
 ---
 name: carryctx-core
-description: Core CarryCtx capability. Persistent project context and continuity manager for coding agents. Helps agents manage structured tasks, track progress, save checkpoints, maintain context across sessions and Git worktrees. Use when starting work, tracking task progress, creating checkpoints, switching worktrees, or restoring project state.
+description: Core CarryCtx capability. Persistent project context and continuity manager for coding agents. Helps agents manage structured tasks, track progress, save checkpoints, maintain context across sessions and Git worktrees. Use when starting work, tracking task progress, creating checkpoints, switching worktrees, scanning code dependency graphs, running MCP stdio servers, applying presets, or restoring project state.
 license: MIT
 metadata:
   author: Xuepoo
@@ -9,27 +9,26 @@ metadata:
 
 # CarryCtx Core Skill
 
-CarryCtx provides first-class project state and context continuity for AI coding agents. It enables agents to manage tasks, track granular progress, create checkpoint snapshots, and seamlessly preserve context across session restarts, window changes, and Git worktrees.
+CarryCtx provides first-class project state and context continuity for AI coding agents. It enables agents to manage tasks, track granular progress, create checkpoint snapshots, maintain AST code dependency graphs, run stdio MCP servers, apply workflow presets, and seamlessly preserve context across session restarts and Git worktrees.
 
 ## When to Apply
 
 Use CarryCtx commands when:
-- **Starting a new task or session**: Register agent identity, start session, and restore context.
-- **Managing project tasks**: Create, claim, start, complete, block, or cancel tasks.
+- **Starting a new task or session**: Register agent identity, start session, and restore context (`carryctx resume`).
+- **Managing project tasks**: Create, claim, start, complete, block, or cancel tasks (`carryctx task ...`).
 - **Tracking granular progress**: Record structured `todo`, `done`, `block`, `risk`, and `note` items.
 - **Saving state / Checkpointing**: Capture current work progress, git status, and remaining work before ending sessions or switching focus.
-- **Parallel task work**: Create and isolate tasks in dedicated Git worktrees without context collision.
-- **Context restoration**: Query relevance-ordered project state (`carryctx resume` or `carryctx status`).
+- **Code Graph Exploration**: Scan AST module dependencies (`carryctx graph scan`) and export Mermaid/DOT/ASCII diagrams (`carryctx graph export`).
+- **AI Agent Tool Integration (MCP)**: Expose project context to Cursor / Windsurf / AGY via Model Context Protocol stdio server (`carryctx mcp`).
+- **Standardizing Workflows (Presets)**: List, inspect, and apply project workflow blueprints, coding rules, and agent personas (`carryctx preset ...`).
+- **Parallel task work**: Create and isolate tasks in dedicated Git worktrees (`carryctx worktree ...`).
 - **Diagnosing health issues**: Run `carryctx doctor` to surface orphaned tasks, missing hooks, and DB problems.
-- **Setting up shell completions**: Run `carryctx completions <shell>` once per machine for tab-completion.
-- **Installing git hooks**: Run `carryctx hooks install` to auto-checkpoint on every commit.
 - **Pruning old data**: Use `carryctx project prune` to clean up completed tasks and keep the DB lightweight.
-- **Remote Synchronization**: Use `carryctx sync push` or `pull` to sync state across machines or branches.
-- **Agent Analytics**: Use `carryctx stats` to audit agent session lengths and task metrics.
+- **Agent Analytics**: Use `carryctx stats` to audit agent session lengths, task metrics, and export Markdown/CSV reports.
 
 ## Prerequisites
 
-1. Install CarryCtx CLI (`cargo install carryctx` or `npm install -g carryctx`).
+1. Install CarryCtx CLI (`cargo install carryctx` or pre-built binary).
 2. Initialize CarryCtx in the project repository: `carryctx init`.
 
 ## Quick Reference
@@ -45,14 +44,16 @@ Use CarryCtx commands when:
 | **Start Task** | `carryctx task start CTX-0001` | Mark task as in-progress |
 | **Track Progress** | `carryctx progress <todo\|done\|block\|risk\|note> "..."` | Record structured progress item |
 | **Checkpoint** | `carryctx checkpoint --done "..." --remaining "..."` | Save semantically rich state snapshot |
+| **Scan Code Graph** | `carryctx graph scan` | Extract AST dependencies into SQLite graph |
+| **Export Graph** | `carryctx graph export --type <mermaid\|dot\|ascii\|json>` | Render dependency graph (PNG/SVG/ASCII) |
+| **MCP Stdio Server** | `carryctx mcp` | Launch MCP stdio server with 6 agent tools |
+| **Apply Preset** | `carryctx preset apply <preset_name>` | Inject workflow SOPs, rules, or personas |
 | **Worktree** | `carryctx worktree create --task CTX-0001` | Create isolated git worktree for task |
 | **End Session** | `carryctx session end` | Safely end session with checkpoint |
 | **Doctor** | `carryctx doctor` | Diagnose project health |
 | **Install Hooks** | `carryctx hooks install` | Auto-checkpoint on every git commit |
-| **Shell Completions** | `carryctx completions <shell>` | Enable tab-completion |
 | **Prune Data** | `carryctx project prune --older-than 30` | Clean up old completed tasks |
-| **Sync State** | `carryctx sync push/pull --remote <path>` | Synchronize DB state with a remote |
-| **Agent Stats** | `carryctx stats` | View agent session time and performance metrics |
+| **Agent Stats** | `carryctx stats [--markdown] [--output file.csv]` | View metrics and export performance reports |
 
 ## Standard Agent Workflow
 
@@ -69,7 +70,34 @@ carryctx session start
 carryctx resume
 ```
 
-### 2. Task Lifecycle
+### 2. Code Dependency Analysis (Graph Subsystem)
+
+Before modifying code or refactoring modules:
+
+```bash
+# 1. Scan codebase AST dependencies
+carryctx graph scan
+
+# 2. Export sub-graph centered around a specific module
+carryctx graph export --type mermaid --focus "src/application/stats.rs" --depth 2
+
+# 3. Export module-level compact ASCII architectural overview
+carryctx graph export --type ascii --compact
+```
+
+### 3. Workflow Presets & Rule Injection
+
+Inject standard operating procedures or coding guidelines:
+
+```bash
+# List available workflow presets
+carryctx preset list
+
+# Apply a standard bugfix workflow preset to current project
+carryctx preset apply workflows/bugfix
+```
+
+### 4. Task Lifecycle
 
 ```bash
 # List open tasks
@@ -81,13 +109,11 @@ carryctx task start CTX-0001
 
 # Mark task finished after verification
 carryctx task complete CTX-0001
-# Clean up the worktree to save disk space if one was created
-# git worktree remove .worktrees/CTX-0001
 ```
 
-### 3. Granular Progress Tracking
+### 5. Granular Progress Tracking
 
-As work progresses, log structured progress items instead of keeping implicit memory:
+As work progresses, log structured progress items:
 
 ```bash
 carryctx progress todo "Write unit test for auth middleware"
@@ -97,7 +123,7 @@ carryctx progress risk "Breaking change in upstream dependency"
 carryctx progress note "Used LRU cache to optimize token lookups"
 ```
 
-### 4. Creating Checkpoints
+### 6. Creating Checkpoints
 
 Save state before ending a session, switching tasks, or handing off work:
 
@@ -108,7 +134,7 @@ carryctx checkpoint \
   --blocker "None"
 ```
 
-### 5. Worktree Parallelism
+### 7. Worktree Parallelism
 
 When working on independent tasks simultaneously:
 
@@ -117,79 +143,44 @@ carryctx worktree create --task CTX-0002
 # Switches to isolated worktree directory linked to CTX-0002
 ```
 
-### 6. Ending Session
+### 8. Ending Session & Reporting
 
 ```bash
+# End working session
 carryctx session end
+
+# Export project stats report for PR description or documentation
+carryctx stats --markdown --output /tmp/project_stats.md
 ```
 
-### 7. Diagnosing Project Health
+### 9. Model Context Protocol (MCP) Integration
 
-Run `carryctx doctor` after upgrades, after switching machines, or when commands behave unexpectedly:
+To hook CarryCtx directly into Cursor / Windsurf / AGY:
 
-```bash
-carryctx doctor           # human-readable diagnostics with fix hints
-carryctx doctor --json    # machine-readable output
-carryctx doctor --fix     # attempt automatic repairs
+```json
+{
+  "mcpServers": {
+    "carryctx": {
+      "command": "carryctx",
+      "args": ["mcp"]
+    }
+  }
+}
 ```
 
-Doctor checks:
-- Global config validity
-- Git repository connectivity
-- CarryCtx git hook installation
-- SQLite database connection and schema version
-- Orphaned tasks (tasks whose owner agent no longer exists)
-- Active session count
-
-### 8. Git Hooks Integration (optional, recommended)
-
-Install once per repository to auto-checkpoint on every commit and prefix commit messages with the active task ID:
-
-```bash
-carryctx hooks install            # installs post-commit + prepare-commit-msg
-carryctx hooks install --force    # overwrite existing hooks (backs up originals)
-carryctx hooks status             # verify installed hooks
-carryctx hooks uninstall          # remove CarryCtx hooks
-carryctx hooks uninstall --restore  # restore original hooks from .bak
-```
-
-### 9. Project Maintenance, Sync, and Auditing
-
-For long-running projects, you can use advanced commands to maintain a clean database and measure metrics:
-
-```bash
-# Prune completed tasks older than 30 days
-carryctx project prune --older-than 30
-
-# Sync the SQLite state DB to a remote backend (e.g. /tmp/remote-store)
-carryctx sync push --remote /tmp/remote-store
-carryctx sync pull --remote /tmp/remote-store
-
-# View analytics and session time for agents
-carryctx stats
-```
-
-### 10. Shell Tab-Completion (one-time setup per machine)
-
-```bash
-# Bash
-carryctx completions bash >> ~/.bash_completion.d/carryctx
-
-# Zsh (add to ~/.zshrc)
-eval "$(carryctx completions zsh)"
-
-# Fish
-carryctx completions fish > ~/.config/fish/completions/carryctx.fish
-
-# PowerShell
-carryctx completions powershell | Out-String | Invoke-Expression
-```
+Exposed MCP Tools:
+- `carryctx_graph_explorer`: Query module dependencies and callers.
+- `carryctx_context_manager`: Read active project state and checkpoints.
+- `carryctx_task_manager`: List, claim, and update task statuses.
+- `carryctx_progress_tracker`: Log todo/done/block items.
+- `carryctx_decision_logger`: Record architectural decisions.
+- `carryctx_project_admin`: Run diagnostics and maintenance tasks.
 
 ## Best Practices for Coding Agents
 
 1. **Always run `carryctx resume` when starting**: Re-orients agent to current task and progress immediately.
-2. **Explicitly claim tasks**: Prevents duplicate execution when multiple agents work on the same repository.
-3. **Use structured progress items**: Keep `todo`, `done`, and `block` updated during execution steps.
-4. **Checkpoint before stopping**: Always create a checkpoint before yielding control or completing complex multi-step work.
-5. **Run `carryctx doctor` on first use or after upgrade**: Surfaces setup gaps before they cause runtime errors.
-6. **Install git hooks on project setup**: `carryctx hooks install` ensures every commit automatically captures a checkpoint without manual intervention.
+2. **Scan code graph before large refactors**: `carryctx graph scan` prevents broken upstream dependencies.
+3. **Explicitly claim tasks**: Prevents duplicate execution when multiple agents work on the same repository.
+4. **Use structured progress items**: Keep `todo`, `done`, and `block` updated during execution steps.
+5. **Checkpoint before stopping**: Always create a checkpoint before yielding control or completing complex multi-step work.
+6. **Run `carryctx doctor` on first use or after upgrade**: Surfaces setup gaps before they cause runtime errors.
