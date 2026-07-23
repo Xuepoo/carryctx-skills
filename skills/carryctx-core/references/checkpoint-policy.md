@@ -7,7 +7,7 @@ Checkpoints are immutable snapshots of project progress at a point in time. They
 Once created, a checkpoint **cannot be modified or deleted**. This ensures:
 
 - **Audit trail**: Every checkpoint is a permanent record of what the agent reported at that moment.
-- **Reproducibility**: A checkpoint's Git SHA always points to the exact state of the repository when the checkpoint was made.
+- **Reproducibility**: A checkpoint captures the committed Git base SHA, working-tree cleanliness, CarryCtx state, and optional metadata. (Note: Uncommitted diffs and untracked files are not automatically snapshotted).
 - **Trust**: No retroactive editing of progress history.
 
 ### Corrections
@@ -37,7 +37,7 @@ Each checkpoint records:
 | `notes`                   | Free-form notes                             |
 | `created_at`              | UTC ISO-8601 timestamp                      |
 
-The `git_head_sha` is captured immediately on creation. If the working tree has uncommitted changes, `has_uncommitted_changes` is set to `true` but the checkpoint is still created — agents are not required to commit before checkpointing.
+The `git_head_sha` is captured immediately on creation. If the working tree has uncommitted changes, `has_uncommitted_changes` is set to `true`. While the checkpoint is still created successfully, agents are strongly encouraged to commit their changes first if they require full reproducibility, as CarryCtx does not snapshot the raw diffs.
 
 ## Relationship to Sessions
 

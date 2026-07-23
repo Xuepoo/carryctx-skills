@@ -48,15 +48,14 @@ This applies any pending schema migrations. The database is backed up before mig
 
 ## Task Already Claimed
 
-**Error message**: `error: task CTX-NNNN is already claimed by <agent>. Use '--force' to override or contact <agent>.`
+**Error message**: `error: task CTX-NNNN is already claimed by <agent>.`
 
 **Cause**: Attempting to claim a task that is already assigned to another agent. This prevents duplicate work.
 
 **Resolution**:
 
 - **Contact the claiming agent**: coordinate via your team's communication channel.
-- **Force reassignment** (use with caution): `carryctx task claim CTX-NNNN --force`. This silently reassigns the task. Only do this if the other agent is confirmed to not be working on it.
-- **Unclaim first**: ask the other agent to run `carryctx task unclaim CTX-NNNN` to release ownership.
+- **Release first**: ask the other agent to run `carryctx task release CTX-NNNN` to release ownership.
 
 ## No Active Session
 
