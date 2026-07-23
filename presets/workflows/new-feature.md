@@ -19,4 +19,4 @@
    - Update `CHANGELOG.md` with the new feature.
    - Add docstrings to all new public functions/classes.
 6. **Checkpointing**:
-   - Run `carryctx checkpoint` with a message summarizing the completed feature.
+   - Run `carryctx checkpoint --task <TASK_ID>` with a message summarizing the completed feature.
