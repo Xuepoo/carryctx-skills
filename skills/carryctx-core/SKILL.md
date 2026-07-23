@@ -209,12 +209,24 @@ To hook CarryCtx directly into Cursor / Windsurf / AGY:
 ```
 
 Exposed MCP Tools:
-- `carryctx_graph_explorer`: Query module dependencies and callers.
-- `carryctx_context_manager`: Read active project state and checkpoints.
-- `carryctx_task_manager`: List, claim, and update task statuses.
-- `carryctx_progress_tracker`: Log todo/done/block items.
-- `carryctx_decision_logger`: Record architectural decisions.
-- `carryctx_project_admin`: Run diagnostics and maintenance tasks.
+
+### 10. Debugging & Troubleshooting
+
+Enable structured debug logging to diagnose issues:
+
+```bash
+# Show debug logs for CarryCtx operations
+export RUST_LOG=carryctx=debug
+carryctx task list          # See debug output before command results
+
+# Show only errors
+export RUST_LOG=error
+carryctx status
+
+# Run diagnostics
+carryctx doctor             # Check project health
+carryctx doctor --json      # Machine-readable diagnostic output
+```
 
 ## Best Practices for Coding Agents
 
