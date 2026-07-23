@@ -7,13 +7,6 @@
   "carryctx": {
     "engine": ">=0.2.0"
   },
-  "rules": [
-    {
-      "source": "presets/rules/refactor.md",
-      "target": "workflows/refactor.md",
-      "kind": "workflow"
-    }
-  ],
   "workflows": [
     {
       "source": "presets/workflows/refactor.md",

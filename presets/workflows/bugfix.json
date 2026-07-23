@@ -7,13 +7,6 @@
   "carryctx": {
     "engine": ">=0.2.0"
   },
-  "rules": [
-    {
-      "source": "presets/rules/bugfix.md",
-      "target": "workflows/bugfix.md",
-      "kind": "workflow"
-    }
-  ],
   "workflows": [
     {
       "source": "presets/workflows/bugfix.md",
