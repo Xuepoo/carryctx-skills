@@ -8,16 +8,27 @@ This repository provides modular, first-class CarryCtx awareness to AI coding ag
 
 Install CarryCtx skills into your agent environment using the official `skills` CLI tool:
 
-### Via `npx skills` (Recommended)
+### 1. Interactive Installation (Select Multiple / All)
+
+If you want to install all skills at once, simply run the command without specifying a skill. An interactive menu will appear allowing you to select all of them:
+
+```bash
+npx skills add https://github.com/Xuepoo/carryctx-skills
+# (Press 'a' to select all, then 'Enter' to install)
+```
+
+### 2. Install Specific Skills (Headless)
+
+If you only want specific modules, you can install them directly via the `--skill` flag:
 
 ```bash
 # Add the Core CLI capability
-npx skills add https://github.com/Xuepoo/carryctx-skills --skill carryctx-core
+npx skills add https://github.com/Xuepoo/carryctx-skills --skill carryctx-core -y
 
 # Add other capabilities as needed:
-npx skills add https://github.com/Xuepoo/carryctx-skills --skill carryctx-rules
-npx skills add https://github.com/Xuepoo/carryctx-skills --skill carryctx-workflows
-npx skills add https://github.com/Xuepoo/carryctx-skills --skill carryctx-personas
+npx skills add https://github.com/Xuepoo/carryctx-skills --skill carryctx-rules -y
+npx skills add https://github.com/Xuepoo/carryctx-skills --skill carryctx-workflows -y
+npx skills add https://github.com/Xuepoo/carryctx-skills --skill carryctx-personas -y
 ```
 
 ## Available Skills
