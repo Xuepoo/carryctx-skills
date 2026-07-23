@@ -40,12 +40,27 @@ npx skills add https://github.com/Xuepoo/carryctx-skills --skill carryctx-person
 | **`carryctx-workflows`** | Parses `.carryctx/workflows/` blueprints and automatically breaks down tasks into granular todo lists. | [`skills/carryctx-workflows/`](skills/carryctx-workflows/) | Available |
 | **`carryctx-personas`** | Enables agents to adopt `.carryctx/personas/` (e.g., Code Reviewer, Architect) and enforce specific code styles. | [`skills/carryctx-personas/`](skills/carryctx-personas/) | Available |
 
+## 🎁 Presets Library
+
+Not sure how to write your own Personas, Rules, or Workflows? We've got you covered! 
+
+This repository includes a `presets/` folder containing out-of-the-box, battle-tested templates. You can simply copy these into your project's `.carryctx/` directory to instantly upgrade your AI team.
+
+```bash
+# Example: Copy the strict Code Reviewer persona into your project
+cp -r node_modules/carryctx-skills/presets/personas/reviewer.md .carryctx/personas/
+```
+
 ## Skill Structure
 
 ```text
 carryctx-skills/
 ├── README.md
 ├── LICENSE
+├── presets/                  # 🎁 Library of ready-to-use templates
+│   ├── personas/
+│   ├── rules/
+│   └── workflows/
 └── skills/
     ├── carryctx-core/        # Basic CLI wrapping
     │   ├── SKILL.md
