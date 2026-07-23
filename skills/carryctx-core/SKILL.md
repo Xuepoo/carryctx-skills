@@ -16,7 +16,7 @@ CarryCtx provides first-class project state and context continuity for AI coding
 Use CarryCtx commands when:
 - **Starting a new task or session**: Register agent identity, start session, and restore context (`carryctx resume`).
 - **Managing project tasks**: Create, claim, start, complete, block, or cancel tasks (`carryctx task ...`).
-- **Tracking granular progress**: Record structured `todo`, `done`, `block`, `risk`, and `note` items.
+- **Tracking granular progress**: Record structured `todo`, `block`, `risk`, and `note` items.
 - **Saving state / Checkpointing**: Capture current work progress, git status, and remaining work before ending sessions or switching focus.
 - **Code Graph Exploration**: Scan AST module dependencies (`carryctx graph scan`) and export Mermaid/DOT/ASCII diagrams (`carryctx graph export`).
 - **AI Agent Tool Integration (MCP)**: Expose project context to Cursor / Windsurf / AGY via Model Context Protocol stdio server (`carryctx mcp`).
@@ -36,24 +36,28 @@ Use CarryCtx commands when:
 | Action | Command | Purpose |
 |--------|---------|---------| 
 | **Agent Setup** | `carryctx agent register --name "$(whoami)" --provider "claude-code"` | Register agent identity |
-| **Current Agent** | `carryctx agent current --name "$(whoami)"` | Set active agent |
+| **Current Agent** | `carryctx agent current` | Show active agent identity |
 | **Start Session** | `carryctx session start` | Begin tracked working session |
 | **Resume Context** | `carryctx resume` | Fetch current task, progress & next actions |
 | **Create Task** | `carryctx task create --title "..." [--depends-on CTX-0001]` | Define a new task |
 | **Claim Task** | `carryctx task claim CTX-0001` | Assign task to current agent |
 | **Start Task** | `carryctx task start CTX-0001` | Mark task as in-progress |
-| **Track Progress** | `carryctx progress <todo\|done\|block\|risk\|note> "..."` | Record structured progress item |
+| **Track Progress** | `carryctx progress <todo\|block\|risk\|note> "..."` | Record structured progress item |
 | **Checkpoint** | `carryctx checkpoint --done "..." --remaining "..."` | Save semantically rich state snapshot |
 | **Scan Code Graph** | `carryctx graph scan` | Extract AST dependencies into SQLite graph |
 | **Export Graph** | `carryctx graph export --type <mermaid\|dot\|ascii\|json>` | Render dependency graph (PNG/SVG/ASCII) |
 | **MCP Stdio Server** | `carryctx mcp` | Launch MCP stdio server with 6 agent tools |
 | **Apply Preset** | `carryctx preset apply <preset_name>` | Inject workflow SOPs, rules, or personas |
-| **Worktree** | `carryctx worktree create --task CTX-0001` | Create isolated git worktree for task |
+| **Worktree** | `carryctx worktree create CTX-0001` | Create isolated git worktree for task |
 | **End Session** | `carryctx session end` | Safely end session with checkpoint |
 | **Doctor** | `carryctx doctor` | Diagnose project health |
 | **Install Hooks** | `carryctx hooks install` | Auto-checkpoint on every git commit |
 | **Prune Data** | `carryctx project prune --older-than 30` | Clean up old completed tasks |
 | **Agent Stats** | `carryctx stats [--markdown] [--output file.csv]` | View metrics and export performance reports |
+| **Decision** | `carryctx decision add --title "..." --task CTX-0001` | Record architectural decision |
+| **Handoff** | `carryctx handoff create --target <agent> --task CTX-0001` | Transfer work between agents |
+| **Session Pause** | `carryctx session pause` | Pause active session timer |
+| **Session Resume** | `carryctx session resume` | Resume a paused session |
 
 ## Standard Agent Workflow
 
@@ -63,11 +67,20 @@ At the start of any interaction or after an agent restart:
 
 ```bash
 # Register & set identity if not already configured
-carryctx agent current --name "claude" || carryctx agent register --name "claude" --provider "claude-code"
+carryctx agent current || carryctx agent register --name "claude" --provider "claude-code"
 
 # Start session and load current context
 carryctx session start
 carryctx resume
+```
+
+To pause and resume sessions:
+
+```bash
+carryctx session pause    # Pause active session (timer stops)
+carryctx session resume   # Resume a paused session
+carryctx session end      # End session with optional checkpoint
+carryctx session abandon  # End session without checkpoint
 ```
 
 ### 2. Code Dependency Analysis (Graph Subsystem)
@@ -117,10 +130,12 @@ As work progresses, log structured progress items:
 
 ```bash
 carryctx progress todo "Write unit test for auth middleware"
-carryctx progress done "Implemented JWT token validation"
+carryctx progress todo "Implement JWT token validation"
 carryctx progress block "Waiting for API endpoint spec confirmation"
 carryctx progress risk "Breaking change in upstream dependency"
 carryctx progress note "Used LRU cache to optimize token lookups"
+# Mark a todo as completed:
+carryctx progress complete PX-0001
 ```
 
 ### 6. Creating Checkpoints
@@ -139,8 +154,33 @@ carryctx checkpoint \
 When working on independent tasks simultaneously:
 
 ```bash
-carryctx worktree create --task CTX-0002
+carryctx worktree create CTX-0002
 # Switches to isolated worktree directory linked to CTX-0002
+```
+
+
+### 7a. Recording Decisions & Handoffs
+
+Capture architectural decisions and hand off work between agents:
+
+```bash
+# Record an architectural decision (ADR) linked to a task
+carryctx decision add --title "Use SQLite for storage" --task CTX-0001
+
+# List or search decisions
+carryctx decision list
+carryctx decision search --keyword SQLite
+
+# Mark a decision as superseded by a newer one
+carryctx decision supersede DEC-0001 --by DEC-0002
+
+# Create a handoff to transfer work to another agent
+carryctx handoff create --target <agent-ulid> --summary "Implement the API" --task CTX-0001
+
+# Accept, reject, or close a handoff
+carryctx handoff accept HO-0001
+carryctx handoff reject HO-0001 --reason "Not my area"
+carryctx handoff close HO-0001
 ```
 
 ### 8. Ending Session & Reporting
