@@ -1,93 +1,117 @@
 ---
 name: carryctx
-description: Helps coding agents persist and restore project context across sessions, manage tasks, track progress, and coordinate work across Git worktrees.
+description: Persistent project context and continuity manager for coding agents. Helps agents manage structured tasks, track progress, save checkpoints, and maintain context across sessions and Git worktrees. Use when starting work, tracking task progress, creating checkpoints, switching worktrees, or restoring project state.
+license: MIT
+metadata:
+  author: Xuepoo
+  version: "0.1.0"
 ---
 
 # CarryCtx Agent Skill
 
-Helps coding agents persist and restore project context across sessions, manage tasks, track progress, and coordinate work across Git worktrees.
+CarryCtx provides first-class project state and context continuity for AI coding agents. It enables agents to manage tasks, track granular progress, create checkpoint snapshots, and seamlessly preserve context across session restarts, window changes, and Git worktrees.
+
+## When to Apply
+
+Use CarryCtx commands when:
+- **Starting a new task or session**: Register agent identity, start session, and restore context.
+- **Managing project tasks**: Create, claim, start, complete, block, or cancel tasks.
+- **Tracking granular progress**: Record structured `todo`, `done`, `block`, `risk`, and `note` items.
+- **Saving state / Checkpointing**: Capture current work progress, git status, and remaining work before ending sessions or switching focus.
+- **Parallel task work**: Create and isolate tasks in dedicated Git worktrees without context collision.
+- **Context restoration**: Query relevance-ordered project state (`carryctx resume` or `carryctx status`).
 
 ## Prerequisites
 
-- [CarryCtx CLI](https://github.com/Xuepoo/carryctx) installed (`cargo install carryctx` or `npm install -g carryctx`)
-- A Git repository initialized with `carryctx init`
+1. Install CarryCtx CLI (`cargo install carryctx` or `npm install -g carryctx`).
+2. Initialize CarryCtx in the project repository: `carryctx init`.
 
-## Quick Start
+## Quick Reference
 
-1. **Register as an agent**: `carryctx agent register --name "$(whoami)" --provider "claude-code"`
-2. **Set as current agent**: `carryctx agent current --name "$(whoami)"` or set env `CARRYCTX_AGENT=$(whoami)`
-3. **Start a session**: `carryctx session start`
-4. **Resume context**: `carryctx resume` — shows current task, checkpoint, progress, and next actions
-5. **End session**: `carryctx session end` — optionally creates a checkpoint first
+| Action | Command | Purpose |
+|--------|---------|---------|
+| **Agent Setup** | `carryctx agent register --name "$(whoami)" --provider "claude-code"` | Register agent identity |
+| **Current Agent** | `carryctx agent current --name "$(whoami)"` | Set active agent |
+| **Start Session** | `carryctx session start` | Begin tracked working session |
+| **Resume Context** | `carryctx resume` | Fetch current task, progress & next actions |
+| **Create Task** | `carryctx task create --title "..." [--depends-on CTX-0001]` | Define a new task |
+| **Claim Task** | `carryctx task claim CTX-0001` | Assign task to current agent |
+| **Start Task** | `carryctx task start CTX-0001` | Mark task as in-progress |
+| **Track Progress** | `carryctx progress <todo\|done\|block\|risk\|note> "..."` | Record structured progress item |
+| **Checkpoint** | `carryctx checkpoint --done "..." --remaining "..."` | Save semantically rich state snapshot |
+| **Worktree** | `carryctx worktree create --task CTX-0001` | Create isolated git worktree for task |
+| **End Session** | `carryctx session end` | Safely end session with checkpoint |
 
-## Workflow
+## Standard Agent Workflow
 
-### Starting Work
+### 1. Session Initialization & Context Restoration
 
-```
-carryctx session start          # or carryctx resume --start-session
-carryctx resume                 # get current context
-```
+At the start of any interaction or after an agent restart:
 
-### Creating Tasks
+```bash
+# Register & set identity if not already configured
+carryctx agent current --name "claude" || carryctx agent register --name "claude" --provider "claude-code"
 
-```
-carryctx task create --title "Implement login page"
-carryctx task create --title "Add tests" --depends-on CTX-0001
-carryctx task claim CTX-0001    # claim ownership
-carryctx task start CTX-0001    # begin work
-```
-
-### Tracking Progress
-
-```
-carryctx progress todo "Design database schema"
-carryctx progress done "Research requirements"
-carryctx progress block "Waiting for API review"
-carryctx progress risk "Third-party dependency may change"
-carryctx progress note "Consider using Redis for caching"
-```
-
-### Checkpoints (save state)
-
-```
-carryctx checkpoint \
-  --done "Implemented login page" \
-  --remaining "Add password reset" \
-  --blocker "Waiting for API review"
-```
-
-### Session Management
-
-```
+# Start session and load current context
 carryctx session start
-carryctx session pause
-carryctx session resume
-carryctx session end          # prompts for checkpoint
+carryctx resume
 ```
 
-### Context & Status
+### 2. Task Lifecycle
 
+```bash
+# List open tasks
+carryctx task list --status ready
+
+# Claim & start task
+carryctx task claim CTX-0001
+carryctx task start CTX-0001
+
+# Mark task finished after verification
+carryctx task complete CTX-0001
 ```
-carryctx status               # project overview
-carryctx status --mine         # my tasks only
-carryctx resume                # current task context
-carryctx context               # full relevance-ordered context
+
+### 3. Granular Progress Tracking
+
+As work progresses, log structured progress items instead of keeping implicit memory:
+
+```bash
+carryctx progress todo "Write unit test for auth middleware"
+carryctx progress done "Implemented JWT token validation"
+carryctx progress block "Waiting for API endpoint spec confirmation"
+carryctx progress risk "Breaking change in upstream dependency"
+carryctx progress note "Used LRU cache to optimize token lookups"
 ```
 
-## Best Practices
+### 4. Creating Checkpoints
 
-1. **Start a session** before beginning work — this tracks what you're doing
-2. **Create checkpoints** at meaningful boundaries — they capture Git state + semantic progress
-3. **Use progress items** liberally — todos, blockers, risks, and notes are structured
-4. **Claim tasks** explicitly — prevents duplicate work across agents
-5. **Use worktrees** for parallel task work — `carryctx worktree create --task CTX-0001`
-6. **End sessions properly** — ending prompts for a checkpoint, ensuring continuity
+Save state before ending a session, switching tasks, or handing off work:
 
-## Configuration
+```bash
+carryctx checkpoint \
+  --done "Finished backend authentication endpoints" \
+  --remaining "Frontend login form integration" \
+  --blocker "None"
+```
 
-See `carryctx config list` for current settings. Key settings:
+### 5. Worktree Parallelism
 
-- `agent.default_name` — default agent identity
-- `session.stale_after` — how long before a session is marked stale (default: 2h)
-- `context.default_mode` — compact or full context output
+When working on independent tasks simultaneously:
+
+```bash
+carryctx worktree create --task CTX-0002
+# Switches to isolated worktree directory linked to CTX-0002
+```
+
+### 6. Ending Session
+
+```bash
+carryctx session end
+```
+
+## Best Practices for Coding Agents
+
+1. **Always run `carryctx resume` when starting**: Re-orients agent to current task and progress immediately.
+2. **Explicitly claim tasks**: Prevents duplicate execution when multiple agents work on the same repository.
+3. **Use structured progress items**: Keep `todo`, `done`, and `block` updated during execution steps.
+4. **Checkpoint before stopping**: Always create a checkpoint before yielding control or completing complex multi-step work.
