@@ -1,0 +1,22 @@
+{
+  "name": "rules/typescript-bun",
+  "version": "1.0.0",
+  "description": "Domain rules for TypeScript/Bun development: types, testing, project structure",
+  "author": "CarryCtx",
+  "license": "MIT",
+  "carryctx": {
+    "engine": ">=0.2.0"
+  },
+  "rules": [
+    {
+      "source": "presets/rules/typescript-bun.md",
+      "target": "rules/typescript-bun.md",
+      "kind": "rule"
+    }
+  ],
+  "permissions": {
+    "requires_filesystem": true,
+    "requires_network": false,
+    "requires_env": []
+  }
+}

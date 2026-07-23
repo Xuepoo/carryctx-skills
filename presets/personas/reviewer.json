@@ -1,0 +1,15 @@
+{
+  "name": "personas/reviewer",
+  "version": "1.0.0",
+  "description": "Code reviewer persona: rigorous security, style, and correctness review using CarryCtx",
+  "author": "CarryCtx",
+  "license": "MIT",
+  "carryctx": {
+    "engine": ">=0.2.0"
+  },
+  "permissions": {
+    "requires_filesystem": true,
+    "requires_network": false,
+    "requires_env": []
+  }
+}
