@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://carryctx.dev/schemas/preset.schema.json",
+  "$id": "https://carryctx.xuepoo.xyz/schemas/preset.schema.json",
   "title": "CarryCtx Preset Manifest",
   "description": "Schema for CarryCtx Capability Packs (Presets) following a package.json style.",
   "type": "object",
