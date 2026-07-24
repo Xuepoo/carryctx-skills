@@ -1,0 +1,7 @@
+{
+  "name": "cloud-native",
+  "type": "rule",
+  "description": "Rules for Cloud Native and Kubernetes-ready applications",
+  "author": "carryctx-team",
+  "version": "1.0.0"
+}

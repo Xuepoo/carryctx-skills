@@ -1,0 +1,7 @@
+{
+  "name": "git-workflow",
+  "type": "rule",
+  "description": "Standardized Git workflow and Conventional Commits rules",
+  "author": "carryctx-team",
+  "version": "1.0.0"
+}

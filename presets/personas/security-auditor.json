@@ -1,0 +1,7 @@
+{
+  "name": "security-auditor",
+  "type": "persona",
+  "description": "Security Auditor focused on identifying vulnerabilities and ensuring safe code",
+  "author": "carryctx-team",
+  "version": "1.0.0"
+}

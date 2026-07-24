@@ -1,0 +1,7 @@
+{
+  "name": "python-backend",
+  "type": "rule",
+  "description": "Rules for modern Python backend development (FastAPI, type hints, Ruff)",
+  "author": "carryctx-team",
+  "version": "1.0.0"
+}

@@ -1,0 +1,7 @@
+{
+  "name": "react-frontend",
+  "type": "rule",
+  "description": "Best practices for React frontend development",
+  "author": "carryctx-team",
+  "version": "1.0.0"
+}

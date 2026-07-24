@@ -1,0 +1,7 @@
+{
+  "name": "code-review",
+  "type": "workflow",
+  "description": "Step-by-step SOP for performing rigorous code reviews",
+  "author": "carryctx-team",
+  "version": "1.0.0"
+}
