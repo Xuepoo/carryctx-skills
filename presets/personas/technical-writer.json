@@ -1,7 +1,7 @@
 {
-  "name": "personas/security-auditor",
+  "name": "personas/technical-writer",
   "version": "1.0.0",
-  "description": "Security Auditor focused on identifying vulnerabilities and ensuring safe code",
+  "description": "Technical Writer focused on audience-appropriate clarity and consistent, well-structured documentation",
   "author": "CarryCtx",
   "license": "MIT",
   "carryctx": {

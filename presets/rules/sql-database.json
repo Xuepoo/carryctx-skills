@@ -1,0 +1,22 @@
+{
+  "name": "rules/sql-database",
+  "version": "1.0.0",
+  "description": "Domain rules for SQL database development: parameterized queries, migration discipline, indexing, transactions, and safe schema changes",
+  "author": "CarryCtx",
+  "license": "MIT",
+  "carryctx": {
+    "engine": ">=0.2.0"
+  },
+  "rules": [
+    {
+      "source": "presets/rules/sql-database.md",
+      "target": "rules/sql-database.md",
+      "kind": "rule"
+    }
+  ],
+  "permissions": {
+    "requires_filesystem": true,
+    "requires_network": false,
+    "requires_env": []
+  }
+}

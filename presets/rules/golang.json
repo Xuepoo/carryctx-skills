@@ -1,0 +1,22 @@
+{
+  "name": "rules/golang",
+  "version": "1.0.0",
+  "description": "Domain rules for Go development: error handling idioms, project layout, concurrency safety, and tooling",
+  "author": "CarryCtx",
+  "license": "MIT",
+  "carryctx": {
+    "engine": ">=0.2.0"
+  },
+  "rules": [
+    {
+      "source": "presets/rules/golang.md",
+      "target": "rules/golang.md",
+      "kind": "rule"
+    }
+  ],
+  "permissions": {
+    "requires_filesystem": true,
+    "requires_network": false,
+    "requires_env": []
+  }
+}

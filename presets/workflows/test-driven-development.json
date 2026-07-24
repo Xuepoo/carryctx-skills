@@ -1,7 +1,15 @@
 {
-  "name": "test-driven-development",
-  "type": "workflow",
+  "name": "workflows/test-driven-development",
+  "version": "1.0.0",
   "description": "SOP for following the Red-Green-Refactor cycle",
-  "author": "carryctx-team",
-  "version": "1.0.0"
+  "author": "CarryCtx",
+  "license": "MIT",
+  "carryctx": {
+    "engine": ">=0.2.0"
+  },
+  "permissions": {
+    "requires_filesystem": true,
+    "requires_network": false,
+    "requires_env": []
+  }
 }

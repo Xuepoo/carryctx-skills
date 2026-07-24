@@ -1,5 +1,5 @@
 {
-  "name": "qt-development",
+  "name": "rules/qt-development",
   "type": "rule",
   "description": "Rules for modern C++ Qt Framework GUI development",
   "author": "carryctx-team",

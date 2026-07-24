@@ -1,7 +1,7 @@
 {
-  "name": "personas/security-auditor",
+  "name": "personas/devops-engineer",
   "version": "1.0.0",
-  "description": "Security Auditor focused on identifying vulnerabilities and ensuring safe code",
+  "description": "DevOps Engineer focused on infrastructure-as-code, reproducibility, observability, and rollback-ready deployments",
   "author": "CarryCtx",
   "license": "MIT",
   "carryctx": {
