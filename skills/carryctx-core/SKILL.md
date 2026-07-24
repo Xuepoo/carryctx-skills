@@ -209,6 +209,12 @@ To hook CarryCtx directly into Cursor / Windsurf / AGY:
 ```
 
 Exposed MCP Tools:
+- `carryctx_graph_explorer`: Query, scan, and export the project Context Graph
+- `carryctx_context_manager`: Manage persistent context, checkpoints, and state snapshots
+- `carryctx_task_manager`: Manage project tasks, dependencies, and priorities
+- `carryctx_progress_tracker`: Manage task progress, notes, and blockers
+- `carryctx_decision_logger`: Log and search architectural decision records
+- `carryctx_project_admin`: Manage project database, stats, cold storage archiving, and config
 
 ### 10. Debugging & Troubleshooting
 
