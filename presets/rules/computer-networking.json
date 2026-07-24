@@ -1,5 +1,5 @@
 {
-  "name": "computer-networking",
+  "name": "rules/computer-networking",
   "type": "rule",
   "description": "Best practices for network programming and socket handling",
   "author": "carryctx-team",

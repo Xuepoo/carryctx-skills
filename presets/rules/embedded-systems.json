@@ -1,5 +1,5 @@
 {
-  "name": "embedded-systems",
+  "name": "rules/embedded-systems",
   "type": "rule",
   "description": "Rules for safe and efficient embedded systems programming",
   "author": "carryctx-team",

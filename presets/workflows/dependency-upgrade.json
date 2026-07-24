@@ -1,0 +1,22 @@
+{
+  "name": "workflows/dependency-upgrade",
+  "version": "1.0.0",
+  "description": "Standard dependency upgrade workflow: scope breaking changes, upgrade and fix breakage, and verify with audit tooling using CarryCtx",
+  "author": "CarryCtx",
+  "license": "MIT",
+  "carryctx": {
+    "engine": ">=0.2.0"
+  },
+  "workflows": [
+    {
+      "source": "presets/workflows/dependency-upgrade.md",
+      "target": "workflows/dependency-upgrade.md",
+      "kind": "workflow"
+    }
+  ],
+  "permissions": {
+    "requires_filesystem": true,
+    "requires_network": false,
+    "requires_env": []
+  }
+}

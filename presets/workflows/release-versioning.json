@@ -1,0 +1,22 @@
+{
+  "name": "workflows/release-versioning",
+  "version": "1.0.0",
+  "description": "Standard release workflow: pre-release verification, semver bump with changelog, and tag/publish using CarryCtx",
+  "author": "CarryCtx",
+  "license": "MIT",
+  "carryctx": {
+    "engine": ">=0.2.0"
+  },
+  "workflows": [
+    {
+      "source": "presets/workflows/release-versioning.md",
+      "target": "workflows/release-versioning.md",
+      "kind": "workflow"
+    }
+  ],
+  "permissions": {
+    "requires_filesystem": true,
+    "requires_network": false,
+    "requires_env": []
+  }
+}

@@ -1,7 +1,7 @@
 {
-  "name": "personas/security-auditor",
+  "name": "personas/performance-engineer",
   "version": "1.0.0",
-  "description": "Security Auditor focused on identifying vulnerabilities and ensuring safe code",
+  "description": "Performance Engineer focused on measuring before optimizing and eliminating wasteful hot-path work",
   "author": "CarryCtx",
   "license": "MIT",
   "carryctx": {

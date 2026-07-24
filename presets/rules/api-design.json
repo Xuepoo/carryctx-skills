@@ -1,0 +1,22 @@
+{
+  "name": "rules/api-design",
+  "version": "1.0.0",
+  "description": "Domain rules for REST API design: resource naming, versioning, error shape, pagination, idempotency",
+  "author": "CarryCtx",
+  "license": "MIT",
+  "carryctx": {
+    "engine": ">=0.2.0"
+  },
+  "rules": [
+    {
+      "source": "presets/rules/api-design.md",
+      "target": "rules/api-design.md",
+      "kind": "rule"
+    }
+  ],
+  "permissions": {
+    "requires_filesystem": true,
+    "requires_network": false,
+    "requires_env": []
+  }
+}

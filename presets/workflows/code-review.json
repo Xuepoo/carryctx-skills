@@ -1,7 +1,15 @@
 {
-  "name": "code-review",
-  "type": "workflow",
+  "name": "workflows/code-review",
+  "version": "1.0.0",
   "description": "Step-by-step SOP for performing rigorous code reviews",
-  "author": "carryctx-team",
-  "version": "1.0.0"
+  "author": "CarryCtx",
+  "license": "MIT",
+  "carryctx": {
+    "engine": ">=0.2.0"
+  },
+  "permissions": {
+    "requires_filesystem": true,
+    "requires_network": false,
+    "requires_env": []
+  }
 }

@@ -1,0 +1,22 @@
+{
+  "name": "rules/docker-containers",
+  "version": "1.0.0",
+  "description": "Domain rules for Docker container builds: multi-stage builds, base image selection, layer caching order, non-root users, and .dockerignore discipline",
+  "author": "CarryCtx",
+  "license": "MIT",
+  "carryctx": {
+    "engine": ">=0.2.0"
+  },
+  "rules": [
+    {
+      "source": "presets/rules/docker-containers.md",
+      "target": "rules/docker-containers.md",
+      "kind": "rule"
+    }
+  ],
+  "permissions": {
+    "requires_filesystem": true,
+    "requires_network": false,
+    "requires_env": []
+  }
+}

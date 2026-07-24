@@ -1,0 +1,22 @@
+{
+  "name": "rules/swift-ios",
+  "version": "1.0.0",
+  "description": "Domain rules for Swift/iOS development: optionals discipline, retain cycles, SwiftUI conventions, structured concurrency",
+  "author": "CarryCtx",
+  "license": "MIT",
+  "carryctx": {
+    "engine": ">=0.2.0"
+  },
+  "rules": [
+    {
+      "source": "presets/rules/swift-ios.md",
+      "target": "rules/swift-ios.md",
+      "kind": "rule"
+    }
+  ],
+  "permissions": {
+    "requires_filesystem": true,
+    "requires_network": false,
+    "requires_env": []
+  }
+}

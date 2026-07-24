@@ -1,7 +1,15 @@
 {
-  "name": "qa-engineer",
-  "type": "persona",
+  "name": "personas/qa-engineer",
+  "version": "1.0.0",
   "description": "QA Engineer focused on edge cases and test automation",
-  "author": "carryctx-team",
-  "version": "1.0.0"
+  "author": "CarryCtx",
+  "license": "MIT",
+  "carryctx": {
+    "engine": ">=0.2.0"
+  },
+  "permissions": {
+    "requires_filesystem": true,
+    "requires_network": false,
+    "requires_env": []
+  }
 }

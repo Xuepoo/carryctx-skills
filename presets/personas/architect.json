@@ -1,7 +1,15 @@
 {
-  "name": "architect",
-  "type": "persona",
+  "name": "personas/architect",
+  "version": "1.0.0",
   "description": "Principal Software Architect focusing on macro-level design and scalability",
-  "author": "carryctx-team",
-  "version": "1.0.0"
+  "author": "CarryCtx",
+  "license": "MIT",
+  "carryctx": {
+    "engine": ">=0.2.0"
+  },
+  "permissions": {
+    "requires_filesystem": true,
+    "requires_network": false,
+    "requires_env": []
+  }
 }

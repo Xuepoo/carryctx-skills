@@ -1,5 +1,5 @@
 {
-  "name": "react-frontend",
+  "name": "rules/react-frontend",
   "type": "rule",
   "description": "Best practices for React frontend development",
   "author": "carryctx-team",
