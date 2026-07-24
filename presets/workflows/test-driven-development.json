@@ -1,0 +1,7 @@
+{
+  "name": "test-driven-development",
+  "type": "workflow",
+  "description": "SOP for following the Red-Green-Refactor cycle",
+  "author": "carryctx-team",
+  "version": "1.0.0"
+}

@@ -1,0 +1,7 @@
+{
+  "name": "qa-engineer",
+  "type": "persona",
+  "description": "QA Engineer focused on edge cases and test automation",
+  "author": "carryctx-team",
+  "version": "1.0.0"
+}

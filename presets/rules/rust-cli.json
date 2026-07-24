@@ -1,0 +1,22 @@
+{
+  "name": "rules/rust-cli",
+  "version": "1.0.0",
+  "description": "Domain rules for Rust CLI development: error handling, clap, code organization",
+  "author": "CarryCtx",
+  "license": "MIT",
+  "carryctx": {
+    "engine": ">=0.2.0"
+  },
+  "rules": [
+    {
+      "source": "presets/rules/rust-cli.md",
+      "target": "rules/rust-cli.md",
+      "kind": "rule"
+    }
+  ],
+  "permissions": {
+    "requires_filesystem": true,
+    "requires_network": false,
+    "requires_env": []
+  }
+}

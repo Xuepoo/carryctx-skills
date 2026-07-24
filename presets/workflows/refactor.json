@@ -1,0 +1,22 @@
+{
+  "name": "workflows/refactor",
+  "version": "1.0.0",
+  "description": "Standard refactor workflow: analyze, extract, migrate, test using CarryCtx",
+  "author": "CarryCtx",
+  "license": "MIT",
+  "carryctx": {
+    "engine": ">=0.2.0"
+  },
+  "workflows": [
+    {
+      "source": "presets/workflows/refactor.md",
+      "target": "workflows/refactor.md",
+      "kind": "workflow"
+    }
+  ],
+  "permissions": {
+    "requires_filesystem": true,
+    "requires_network": false,
+    "requires_env": []
+  }
+}
