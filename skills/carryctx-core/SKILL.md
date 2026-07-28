@@ -1,10 +1,10 @@
 ---
 name: carryctx-core
-description: Core CarryCtx capability. Persistent project context and continuity manager for coding agents. Helps agents manage structured tasks, track progress, save checkpoints, maintain context across sessions and Git worktrees. Use when starting work, tracking task progress, creating checkpoints, switching worktrees, scanning code dependency graphs, running MCP stdio servers, applying presets, or restoring project state.
+description: Core CarryCtx capability. Persistent project context and continuity manager for coding agents. Helps agents manage structured tasks, track progress, save checkpoints, maintain context across sessions and Git worktrees. Use when starting work, tracking task progress, creating checkpoints, switching worktrees, scanning code dependency graphs, running MCP stdio servers, applying presets, restoring project state, or searching prior tasks/checkpoints/decisions by content.
 license: MIT
 metadata:
   author: Xuepoo
-  version: "0.2.0"
+  version: "0.3.0"
 ---
 
 # CarryCtx Core Skill
@@ -25,6 +25,7 @@ Use CarryCtx commands when:
 - **Diagnosing health issues**: Run `carryctx doctor` to surface orphaned tasks, missing hooks, and DB problems.
 - **Pruning old data**: Use `carryctx project prune` to clean up completed tasks and keep the DB lightweight.
 - **Agent Analytics**: Use `carryctx stats` to audit agent session lengths, task metrics, and export Markdown/CSV reports.
+- **Finding prior work by content**: Use `carryctx search "<query>"` to find tasks, progress items, checkpoints, or decisions by keyword instead of hand-writing SQL or grepping commit messages.
 
 ## Prerequisites
 
@@ -58,6 +59,7 @@ Use CarryCtx commands when:
 | **Handoff** | `carryctx handoff create --target <agent> --task CTX-0001` | Transfer work between agents |
 | **Session Pause** | `carryctx session pause` | Pause active session timer |
 | **Session Resume** | `carryctx session resume` | Resume a paused session |
+| **Search** | `carryctx search "<query>" [--type task\|progress\|checkpoint\|decision]` | Full-text search across tasks, progress, checkpoints, decisions |
 
 ## Standard Agent Workflow
 
@@ -182,6 +184,24 @@ carryctx handoff accept HO-0001
 carryctx handoff reject HO-0001 --reason "Not my area"
 carryctx handoff close HO-0001
 ```
+
+### 7b. Full-Text Search Across Project History
+
+Find prior work by content, not by remembering which branch or task touched it. Searches task titles/descriptions, progress items, checkpoint notes, and decisions, all ranked by relevance:
+
+```bash
+# Search everything
+carryctx search "markdown worker protocol"
+
+# Scope to one entity kind
+carryctx search "retry backoff" --type checkpoint
+
+# Narrow by the owning task's status or owner agent
+carryctx search "auth" --status in_progress
+carryctx search "auth" --owner claude-code
+```
+
+Each hit includes the owning task's display ID, status, and (when known) the branch it was worked on — use this before starting related work to avoid duplicating already-solved problems, and before a handoff to point the receiving agent at the exact checkpoint or decision that explains a prior choice.
 
 ### 8. Ending Session & Reporting
 
