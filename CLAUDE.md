@@ -109,3 +109,4 @@ eval "$(carryctx completions bash)"   # or zsh/fish/powershell
 | Project unhealthy | `carryctx doctor` |
 | New task | `carryctx task create --title "..."` |
 | Parallel work | `carryctx worktree create --task CTX-NNNN` |
+| Find prior work by content | `carryctx search "<query>" --type checkpoint` |
