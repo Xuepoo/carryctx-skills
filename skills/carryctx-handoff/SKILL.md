@@ -130,6 +130,13 @@ worked, which makes `task list --status in_progress` useless as a startup signal
    carryctx handoff show HO-XXXX --agent <you>
    ```
 
+   Since **0.5.1** `list` shows only **pending** requests by default, which is what
+   makes it usable as a session-start check — before that it returned every record
+   ever created, so a project with one actionable request listed seven. Widen
+   deliberately: `--all` for the unfiltered view, `--status <pending|accepted|declined|closed>`
+   for one state (the domain spellings `open`/`rejected` are accepted too), and
+   `--for-agent <name-ULID-or-role>` to see what is routed to someone else.
+
    More than one open request is normal. Their summaries say whether they are ordered
    or independent; if two are independent, they can run in parallel worktrees.
 2. **Read the document first** — the summary names its path. It states what not to redo, the traps, and the first commands.
