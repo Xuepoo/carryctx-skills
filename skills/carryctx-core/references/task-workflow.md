@@ -50,9 +50,13 @@ Always use the CLI commands to move tasks through their lifecycle:
 
 6. **Managing Dependencies**
    ```bash
-   carryctx task depend <task_id> --on <other_task_id> --type blocks
+   carryctx task depend <task_id> --on <other_task_id>           # strong (default)
+   carryctx task depend <task_id> --on <other_task_id> --kind informational
    carryctx task undepend <task_id> --on <other_task_id>
    ```
+   `--kind` accepts only `strong` or `informational` (alias `info`). A
+   `strong` dependency blocks claim/start until the prerequisite is completed;
+   `informational` is recorded but never gates transitions.
 
 ## Agent Directives
 

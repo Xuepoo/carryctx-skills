@@ -43,6 +43,7 @@ Use CarryCtx commands when:
 | **Resume Context**   | `carryctx resume`                                                         | Fetch current task, progress & next actions                     |
 | **Create Task**      | `carryctx task create --title "..." [--depends-on CTX-0001]`              | Define a new task                                               |
 | **Claim Task**       | `carryctx task claim CTX-0001`                                            | Assign task to current agent                                    |
+| **Edit Task**       | `carryctx task edit CTX-0001 [--title ...] [--priority ...] [--description ...]` | Update task title, priority, or description |
 | **Start Task**       | `carryctx task start CTX-0001`                                            | Mark task as in-progress                                        |
 | **Track Progress**   | `carryctx progress <todo\|block\|risk\|note> "..."`                       | Record structured progress item                                 |
 | **Checkpoint**       | `carryctx checkpoint --done "..." --remaining "..."`                      | Save semantically rich state snapshot                           |
