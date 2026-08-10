@@ -29,20 +29,22 @@ npx skills add https://github.com/Xuepoo/carryctx-skills --skill carryctx-core -
 npx skills add https://github.com/Xuepoo/carryctx-skills --skill carryctx-rules -y
 npx skills add https://github.com/Xuepoo/carryctx-skills --skill carryctx-workflows -y
 npx skills add https://github.com/Xuepoo/carryctx-skills --skill carryctx-personas -y
+npx skills add https://github.com/Xuepoo/carryctx-skills --skill carryctx-handoff -y
 ```
 
 ## Available Skills
 
-| Skill | Description | Location | Status |
-|-------|-------------|----------|--------|
-| **`carryctx-core`** | Preserves and restores project context, manages tasks, tracks progress, and saves checkpoints across agent sessions. | [`skills/carryctx-core/`](skills/carryctx-core/) | Available |
-| **`carryctx-rules`** | Teaches the agent to dynamically load and obey project-specific `.carryctx/rules/`. | [`skills/carryctx-rules/`](skills/carryctx-rules/) | Available |
-| **`carryctx-workflows`** | Parses `.carryctx/workflows/` blueprints and automatically breaks down tasks into granular todo lists. | [`skills/carryctx-workflows/`](skills/carryctx-workflows/) | Available |
-| **`carryctx-personas`** | Enables agents to adopt `.carryctx/personas/` (e.g., Code Reviewer, Architect) and enforce specific code styles. | [`skills/carryctx-personas/`](skills/carryctx-personas/) | Available |
+| Skill                    | Description                                                                                                                                                                                    | Location                                                   | Status    |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | --------- |
+| **`carryctx-core`**      | Preserves and restores project context, manages tasks, tracks progress, and saves checkpoints across agent sessions.                                                                           | [`skills/carryctx-core/`](skills/carryctx-core/)           | Available |
+| **`carryctx-rules`**     | Teaches the agent to dynamically load and obey project-specific `.carryctx/rules/`.                                                                                                            | [`skills/carryctx-rules/`](skills/carryctx-rules/)         | Available |
+| **`carryctx-workflows`** | Parses `.carryctx/workflows/` blueprints and automatically breaks down tasks into granular todo lists.                                                                                         | [`skills/carryctx-workflows/`](skills/carryctx-workflows/) | Available |
+| **`carryctx-personas`**  | Enables agents to adopt `.carryctx/personas/` (e.g., Code Reviewer, Architect) and enforce specific code styles.                                                                               | [`skills/carryctx-personas/`](skills/carryctx-personas/)   | Available |
+| **`carryctx-handoff`**   | Produces a handoff-prompt document from CarryCtx state (tasks, checkpoints, decisions, progress) and routes it with `carryctx handoff create` — pairs with the generic `handoff-prompt` skill. | [`skills/carryctx-handoff/`](skills/carryctx-handoff/)     | Available |
 
 ## 🎁 Presets Library
 
-Not sure how to write your own Personas, Rules, or Workflows? We've got you covered! 
+Not sure how to write your own Personas, Rules, or Workflows? We've got you covered!
 
 This repository includes a `presets/` folder containing out-of-the-box, battle-tested templates. You can simply copy these into your project's `.carryctx/` directory to instantly upgrade your AI team.
 
