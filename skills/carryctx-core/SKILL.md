@@ -14,6 +14,7 @@ CarryCtx provides first-class project state and context continuity for AI coding
 ## When to Apply
 
 Use CarryCtx commands when:
+
 - **Starting a new task or session**: Register agent identity, start session, and restore context (`carryctx resume`).
 - **Managing project tasks**: Create, claim, start, complete, block, or cancel tasks (`carryctx task ...`).
 - **Tracking granular progress**: Record structured `todo`, `block`, `risk`, and `note` items.
@@ -34,32 +35,49 @@ Use CarryCtx commands when:
 
 ## Quick Reference
 
-| Action | Command | Purpose |
-|--------|---------|---------| 
-| **Agent Setup** | `carryctx agent register --name "$(whoami)" --provider "claude-code"` | Register agent identity |
-| **Current Agent** | `carryctx agent current` | Show active agent identity |
-| **Start Session** | `carryctx session start` | Begin tracked working session |
-| **Resume Context** | `carryctx resume` | Fetch current task, progress & next actions |
-| **Create Task** | `carryctx task create --title "..." [--depends-on CTX-0001]` | Define a new task |
-| **Claim Task** | `carryctx task claim CTX-0001` | Assign task to current agent |
-| **Start Task** | `carryctx task start CTX-0001` | Mark task as in-progress |
-| **Track Progress** | `carryctx progress <todo\|block\|risk\|note> "..."` | Record structured progress item |
-| **Checkpoint** | `carryctx checkpoint --done "..." --remaining "..."` | Save semantically rich state snapshot |
-| **Scan Code Graph** | `carryctx graph scan` | Extract AST dependencies into SQLite graph |
-| **Export Graph** | `carryctx graph export --type <mermaid\|dot\|ascii\|json>` | Render dependency graph (PNG/SVG/ASCII) |
-| **MCP Stdio Server** | `carryctx mcp` | Launch MCP stdio server with 6 agent tools |
-| **Apply Preset** | `carryctx preset apply <preset_name>` | Inject workflow SOPs, rules, or personas |
-| **Worktree** | `carryctx worktree create CTX-0001` | Create isolated git worktree for task |
-| **End Session** | `carryctx session end` | Safely end session with checkpoint |
-| **Doctor** | `carryctx doctor` | Diagnose project health |
-| **Install Hooks** | `carryctx hooks install` | Auto-checkpoint on every git commit |
-| **Prune Data** | `carryctx project prune --older-than 30` | Clean up old completed tasks |
-| **Agent Stats** | `carryctx stats [--markdown] [--output file.csv]` | View metrics and export performance reports |
-| **Decision** | `carryctx decision add --title "..." --task CTX-0001` | Record architectural decision |
-| **Handoff** | `carryctx handoff create --target <agent> --task CTX-0001` | Transfer work between agents |
-| **Session Pause** | `carryctx session pause` | Pause active session timer |
-| **Session Resume** | `carryctx session resume` | Resume a paused session |
-| **Search** | `carryctx search "<query>" [--type task\|progress\|checkpoint\|decision]` | Full-text search across tasks, progress, checkpoints, decisions |
+| Action               | Command                                                                   | Purpose                                                         |
+| -------------------- | ------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| **Agent Setup**      | `carryctx agent register --name "$(whoami)" --provider "claude-code"`     | Register agent identity                                         |
+| **Current Agent**    | `carryctx agent current`                                                  | Show active agent identity                                      |
+| **Start Session**    | `carryctx session start`                                                  | Begin tracked working session                                   |
+| **Resume Context**   | `carryctx resume`                                                         | Fetch current task, progress & next actions                     |
+| **Create Task**      | `carryctx task create --title "..." [--depends-on CTX-0001]`              | Define a new task                                               |
+| **Claim Task**       | `carryctx task claim CTX-0001`                                            | Assign task to current agent                                    |
+| **Start Task**       | `carryctx task start CTX-0001`                                            | Mark task as in-progress                                        |
+| **Track Progress**   | `carryctx progress <todo\|block\|risk\|note> "..."`                       | Record structured progress item                                 |
+| **Checkpoint**       | `carryctx checkpoint --done "..." --remaining "..."`                      | Save semantically rich state snapshot                           |
+| **Scan Code Graph**  | `carryctx graph scan`                                                     | Extract AST dependencies into SQLite graph                      |
+| **Export Graph**     | `carryctx graph export --type <mermaid\|dot\|ascii\|json>`                | Render dependency graph (PNG/SVG/ASCII)                         |
+| **MCP Stdio Server** | `carryctx mcp`                                                            | Launch MCP stdio server with 6 agent tools                      |
+| **Apply Preset**     | `carryctx preset apply <preset_name>`                                     | Inject workflow SOPs, rules, or personas                        |
+| **Worktree**         | `carryctx worktree create CTX-0001`                                       | Create isolated git worktree for task                           |
+| **End Session**      | `carryctx session end`                                                    | Safely end session with checkpoint                              |
+| **Doctor**           | `carryctx doctor`                                                         | Diagnose project health                                         |
+| **Install Hooks**    | `carryctx hooks install`                                                  | Auto-checkpoint on every git commit                             |
+| **Prune Data**       | `carryctx project prune --older-than 30`                                  | Clean up old completed tasks                                    |
+| **Agent Stats**      | `carryctx stats [--markdown] [--output file.csv]`                         | View metrics and export performance reports                     |
+| **Decision**         | `carryctx decision add --title "..." --task CTX-0001`                     | Record architectural decision                                   |
+| **Handoff**          | `carryctx handoff create --target <agent> --task CTX-0001`                | Transfer work between agents                                    |
+| **Session Pause**    | `carryctx session pause`                                                  | Pause active session timer                                      |
+| **Session Resume**   | `carryctx session resume`                                                 | Resume a paused session                                         |
+| **Search**           | `carryctx search "<query>" [--type task\|progress\|checkpoint\|decision]` | Full-text search across tasks, progress, checkpoints, decisions |
+
+## Output Behavior (0.5.2+)
+
+Text output (the default `--format text`) is **compact by design**: entity
+commands print one short line per record (`Task created: CTX-0321`,
+`agent current` prints just the name, lists show `display_id`, status, and a
+clipped title/summary) so agent context stays small. When full records are
+needed:
+
+- `--verbose` (global flag) or `[output] verbose = true` in
+  `.carryctx/config.toml` restores the full pretty-printed record.
+- `--fields display_id,status,summary` (global flag) or the per-command
+  `[output.fields]` table trims records to an allowlist in text and JSON.
+- `--format json` always returns the complete envelope.
+
+JSON output is unchanged and remains the machine contract: every success is a
+single envelope on stdout, every error a single envelope on stderr.
 
 ## Standard Agent Workflow
 
@@ -160,7 +178,6 @@ carryctx worktree create CTX-0002
 # Switches to isolated worktree directory linked to CTX-0002
 ```
 
-
 ### 7a. Recording Decisions & Handoffs
 
 Capture architectural decisions and hand off work between agents:
@@ -229,6 +246,7 @@ To hook CarryCtx directly into Cursor / Windsurf / AGY:
 ```
 
 Exposed MCP Tools:
+
 - `carryctx_graph_explorer`: Query, scan, and export the project Context Graph
 - `carryctx_context_manager`: Manage persistent context, checkpoints, and state snapshots
 - `carryctx_task_manager`: Manage project tasks, dependencies, and priorities
