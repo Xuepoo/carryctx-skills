@@ -62,7 +62,8 @@ This repository includes a `presets/` folder containing out-of-the-box, battle-t
 
 ```bash
 # Example: Copy the strict Code Reviewer persona into your project
-cp -r node_modules/carryctx-skills/presets/personas/reviewer.md .carryctx/personas/
+git clone --depth 1 https://github.com/Xuepoo/carryctx-skills.git /tmp/carryctx-skills
+cp -r /tmp/carryctx-skills/presets/personas/reviewer.md .carryctx/personas/
 ```
 
 ## Skill Structure
