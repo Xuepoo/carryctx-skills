@@ -2,35 +2,47 @@
 
 Agent skills collection for [CarryCtx](https://github.com/Xuepoo/carryctx) — a local-first project state and continuity manager for coding agents.
 
-This repository provides modular, first-class CarryCtx awareness to AI coding agents (such as Antigravity, Claude Code, Cursor, Cline, etc.). Install only the skills you need.
+[![MIT](https://img.shields.io/badge/license-MIT-6366f1.svg)](./LICENSE)
+[![skills.sh](https://skills.sh/b/Xuepoo/carryctx-skills)](https://skills.sh/Xuepoo/carryctx-skills)
 
-## Installation
+This repository is a skills catalog for AI coding agents such as Codex, Claude Code, Cursor, GitHub Copilot, and other agents supported by the [Vercel Labs Skills CLI](https://github.com/vercel-labs/skills).
 
-Install CarryCtx skills into your agent environment using the official `skills` CLI tool:
+## Install with `skills`
 
-### 1. Interactive Installation (Select Multiple / All)
-
-If you want to install all skills at once, simply run the command without specifying a skill. An interactive menu will appear allowing you to select all of them:
-
-```bash
-npx skills add https://github.com/Xuepoo/carryctx-skills
-# (Press 'a' to select all, then 'Enter' to install)
-```
-
-### 2. Install Specific Skills (Headless)
-
-If you only want specific modules, you can install them directly via the `--skill` flag:
+List available skills:
 
 ```bash
-# Add the Core CLI capability
-npx skills add https://github.com/Xuepoo/carryctx-skills --skill carryctx-core -y
-
-# Add other capabilities as needed:
-npx skills add https://github.com/Xuepoo/carryctx-skills --skill carryctx-rules -y
-npx skills add https://github.com/Xuepoo/carryctx-skills --skill carryctx-workflows -y
-npx skills add https://github.com/Xuepoo/carryctx-skills --skill carryctx-personas -y
-npx skills add https://github.com/Xuepoo/carryctx-skills --skill carryctx-handoff -y
+npx skills add Xuepoo/carryctx-skills --list
 ```
+
+Install all skills for all detected agents:
+
+```bash
+npx skills add Xuepoo/carryctx-skills --all
+```
+
+Install selected skills for specific agents:
+
+```bash
+npx skills add Xuepoo/carryctx-skills \
+  --skill carryctx-core \
+  --skill carryctx-rules \
+  --skill carryctx-workflows \
+  --skill carryctx-personas \
+  --skill carryctx-handoff \
+  --agent codex \
+  --agent claude-code \
+  --agent cursor \
+  --agent github-copilot
+```
+
+Use one skill without installing it:
+
+```bash
+npx skills use Xuepoo/carryctx-skills --skill carryctx-core
+```
+
+The Skills CLI supports GitHub shorthand (`owner/repo`), full GitHub URLs, direct skill paths, local paths, and agent-specific installs. See the upstream CLI README for current options and supported agents: <https://github.com/vercel-labs/skills>.
 
 ## Available Skills
 
