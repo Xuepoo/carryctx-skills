@@ -216,7 +216,7 @@ carryctx search "retry backoff" --type checkpoint
 
 # Narrow by the owning task's status or owner agent
 carryctx search "auth" --status in_progress
-carryctx search "auth" --owner claude-code
+carryctx search "auth" --assignee claude-code
 ```
 
 Each hit includes the owning task's display ID, status, and (when known) the branch it was worked on — use this before starting related work to avoid duplicating already-solved problems, and before a handoff to point the receiving agent at the exact checkpoint or decision that explains a prior choice.
