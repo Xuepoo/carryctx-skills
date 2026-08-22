@@ -58,8 +58,26 @@ Always use the CLI commands to move tasks through their lifecycle:
    `strong` dependency blocks claim/start until the prerequisite is completed;
    `informational` is recorded but never gates transitions.
 
+7. **Team & Role Metadata (0.6.0+)**
+
+   ```bash
+   carryctx task create --title "..." --team core --required-role backend
+   carryctx task team set <task_id> --team core
+   carryctx task team set <task_id> --team none    # same as unset
+   carryctx task team unset <task_id>
+   carryctx task edit <task_id> --required-role backend
+   ```
+
+   Both fields are optional additive metadata and default to `null`. Associating,
+   changing, or clearing a task's team **never** alters its status, owner,
+   dependencies, or scopes — it is bookkeeping, not a lifecycle transition.
+   `required_role` is advisory: it records the role the task wants and does not
+   restrict who may claim it. Note that `task edit` carries `--required-role` but
+   not `--team`; use `task team set` / `task team unset` for association. See
+   [team-coordination.md](team-coordination.md).
+
 ## Agent Directives
 
-- **Never** attempt to use nonexistent commands like `unclaim`, `approve`, `reject`, or `close`.
+- **Never** attempt to use nonexistent commands like `unclaim`, `approve`, `reject`, or `close`. To give up ownership, use `carryctx task release`.
 - **Never** assume a state like `BACKLOG` or `IN_FLIGHT`. Only use the exact states defined above.
-- Always check your currently assigned tasks using `carryctx task list --mine` before claiming new ones.
+- Always check your currently assigned tasks using `carryctx task list --mine` before claiming new ones — to avoid duplicating work, not because a limit exists. Holding several `IN_PROGRESS` tasks at once is supported: `claim`, `start`, and `assign` never fail on a task count, and the legacy `task.single_active_task_per_agent` config key is compatibility-only and non-enforcing. Decide your own capacity, or let a commander decide it.

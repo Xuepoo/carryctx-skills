@@ -38,7 +38,7 @@ This applies any pending schema migrations. The database is backed up before mig
 
 **Error message**: `warning: a session is already active (ID: <uuid>, started at <timestamp>). End it first with 'carryctx session end'.`
 
-**Cause**: Attempting to start a new session while one is already ACTIVE. CarryCtx enforces a single active session per repository.
+**Cause**: Attempting to start a new session while **the same agent** already has one ACTIVE. The constraint is per agent, not per repository — different agents legitimately hold concurrent active sessions in one repository.
 
 **Resolution**:
 
@@ -56,6 +56,64 @@ This applies any pending schema migrations. The database is backed up before mig
 
 - **Contact the claiming agent**: coordinate via your team's communication channel.
 - **Release first**: ask the other agent to run `carryctx task release CTX-NNNN` to release ownership.
+
+## Cannot Remove the Current Team Commander
+
+**Error message**: `STATE_CONFLICT: Cannot remove the current team commander.` (exit 3)
+
+**Cause**: A team's commander must remain a member of that team, so removing the
+agent currently set as commander is rejected.
+
+**Resolution**: replace or clear the commander first, then remove the membership.
+
+```bash
+carryctx team commander set <team> --agent <other-member>   # hand over, or
+carryctx team commander set <team> --clear                  # leave the team without one
+carryctx team member remove <team> --agent <ex-commander>
+```
+
+## Commander Must Be a Member of This Team
+
+**Error message**: `STATE_CONFLICT: Commander must be a member of this team.` (exit 3)
+
+**Cause**: `team commander set` was pointed at an agent that is not a member.
+
+**Resolution**: add the membership first. (`team create --commander <agent>` adds
+the membership for you.)
+
+```bash
+carryctx team member add <team> --agent <agent> --role commander
+carryctx team commander set <team> --agent <agent>
+```
+
+## Agent Is Already a Member of This Team
+
+**Error message**: `STATE_CONFLICT: Agent is already a member of this team.` (exit 3)
+
+**Cause**: `team member add` is not an upsert. Re-adding an existing member fails
+rather than updating its role.
+
+**Resolution**: remove and re-add to change a role, minding the commander rule
+above.
+
+## Team Not Found
+
+**Error message**: `TEAM_NOT_FOUND: Team '<ref>' not found.` (exit 7)
+
+**Cause**: The team ref matched neither a team name nor a ULID in this project.
+Teams are project-scoped; a team created in another project is not visible here.
+
+**Resolution**: list what exists with `carryctx team status` (no ref returns every
+team in the project).
+
+## UNIQUE Constraint Failed: teams.project_id, teams.name
+
+**Error message**: `DATABASE_ERROR: SQLite error: UNIQUE constraint failed: teams.project_id, teams.name` (exit 5)
+
+**Cause**: Team names are unique per project and one already holds that name. The
+raw SQLite text here is a rough edge, not a corrupted database.
+
+**Resolution**: pick a different name, or operate on the existing team.
 
 ## No Active Session
 
@@ -141,7 +199,7 @@ Common doctor findings:
 | Finding | Meaning | Fix |
 |---------|---------|-----|
 | `No CarryCtx git hooks installed` | Hooks not set up | `carryctx hooks install` |
-| `N task(s) have deleted owners` | Agent was removed but still owns tasks | `carryctx task unclaim <id>` |
+| `N task(s) have deleted owners` | Agent was removed but still owns tasks | `carryctx task release <id>` |
 | `Cannot open project` | DB missing or git not initialised | `carryctx init` |
 | `No active session` | No session running | `carryctx session start` |
 

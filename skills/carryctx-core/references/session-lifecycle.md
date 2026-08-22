@@ -87,11 +87,19 @@ Stale detection runs as an additional transition: an **ACTIVE** or **PAUSED** se
 
 ## Active Session Guarantee
 
-Only one session may be ACTIVE at a time per repository. Attempting to start a new session while one is active:
+The guarantee is **per agent, not per repository**. One agent holds at most one
+ACTIVE session; different agents hold concurrent ACTIVE sessions in the same
+repository, which is what makes durable teams work. Verified on 0.6.0: two
+registered agents each held an ACTIVE session simultaneously.
 
-1. Warns the agent about the existing active session.
-2. Shows the active session's current context (task, checkpoint, elapsed time).
-3. Asks: _"End current session and start a new one?"_ If yes, the current session is ended (optionally with a checkpoint) and a new one begins.
+Starting a new session while that **same agent** already has one active ends the
+previous session and opens a new one — the prior session moves to `ENDED` rather
+than the command failing. Interactively, the agent is first warned, shown the
+existing session's context (task, checkpoint, elapsed time), and asked _"End
+current session and start a new one?"_
+
+Read live sessions across a team with `carryctx team status <team>`, where each
+member reports its `active_session_id` (`null` when the agent has none).
 
 ## Implementation Notes
 

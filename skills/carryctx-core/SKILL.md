@@ -1,10 +1,10 @@
 ---
 name: carryctx-core
-description: Core CarryCtx capability. Persistent project context and continuity manager for coding agents. Helps agents manage structured tasks, track progress, save checkpoints, maintain context across sessions and Git worktrees. Use when starting work, tracking task progress, creating checkpoints, switching worktrees, scanning code dependency graphs, running MCP stdio servers, applying presets, restoring project state, or searching prior tasks/checkpoints/decisions by content.
+description: Core CarryCtx capability. Persistent project context and continuity manager for coding agents. Helps agents manage structured tasks, track progress, save checkpoints, maintain context across sessions and Git worktrees, and coordinate durable agent teams. Use when starting work, tracking task progress, creating checkpoints, switching worktrees, scanning code dependency graphs, running MCP stdio servers, applying presets, restoring project state, searching prior tasks/checkpoints/decisions by content, or reading team membership and per-agent team context.
 license: MIT
 metadata:
   author: Xuepoo
-  version: "0.3.0"
+  version: "0.4.0"
 ---
 
 # CarryCtx Core Skill
@@ -27,6 +27,7 @@ Use CarryCtx commands when:
 - **Pruning old data**: Use `carryctx project prune` to clean up completed tasks and keep the DB lightweight.
 - **Agent Analytics**: Use `carryctx stats` to audit agent session lengths, task metrics, and export Markdown/CSV reports.
 - **Finding prior work by content**: Use `carryctx search "<query>"` to find tasks, progress items, checkpoints, or decisions by keyword instead of hand-writing SQL or grepping commit messages.
+- **Coordinating multiple agents (0.6.0+)**: Maintain durable teams and read who is on them and what each member holds (`carryctx team ...`). See [references/team-coordination.md](references/team-coordination.md).
 
 ## Prerequisites
 
@@ -62,6 +63,12 @@ Use CarryCtx commands when:
 | **Session Pause**    | `carryctx session pause`                                                  | Pause active session timer                                      |
 | **Session Resume**   | `carryctx session resume`                                                 | Resume a paused session                                         |
 | **Search**           | `carryctx search "<query>" [--type task\|progress\|checkpoint\|decision]` | Full-text search across tasks, progress, checkpoints, decisions |
+| **Create Team**      | `carryctx team create --name core [--commander <agent>]`                  | Create a durable project-scoped team                            |
+| **Team Membership**  | `carryctx team member add core --agent sub-1 --role backend`              | Add or remove a team member                                     |
+| **Set Commander**    | `carryctx team commander set core --agent cmd-1` (or `--clear`)           | Set or clear the team commander                                 |
+| **Team Status**      | `carryctx team status [core]`                                             | Read-only: members, kinds, sessions, active tasks, counts       |
+| **Team Context**     | `carryctx team context [core] [--agent-for <agent>] [--task CTX-0001]`    | Read-only: tasks, deps, blockers, checkpoints, decisions        |
+| **Task Team**        | `carryctx task team set CTX-0001 --team core` (or `unset`)                | Associate or clear a task's team                                |
 
 ## Output Behavior (0.5.2+)
 
@@ -179,7 +186,50 @@ carryctx worktree create CTX-0002
 # Switches to isolated worktree directory linked to CTX-0002
 ```
 
-### 7a. Recording Decisions & Handoffs
+### 7a. Durable Agent Teams (0.6.0+)
+
+A team is project-scoped state in the shared `state.sqlite`, so it outlives
+sessions, terminal windows, and linked worktrees. CarryCtx is the **management and
+persistence layer**: it records who is on a team, what each member holds, and what
+each needs to know. Spawning processes, routing work, retries, concurrency limits,
+and worktree creation belong to the harness running the agents — 0.6.0 ships no
+scheduler, worker runtime, or lease/heartbeat machinery.
+
+```bash
+# Identity with an execution kind
+carryctx agent register --name cmd-1 --provider opencode --kind commander
+carryctx agent register --name sub-1 --provider opencode --kind subagent --role backend
+
+# Build the team; the commander must be a member of its own team
+carryctx team create --name core --commander cmd-1
+carryctx team member add core --agent sub-1 --role backend
+
+# Associate tasks (never changes lifecycle, ownership, deps, or scopes)
+carryctx task create --title "Backend API" --team core --required-role backend
+carryctx task team set CTX-0007 --team core
+```
+
+`carryctx team status` and `carryctx team context` are **read-only projections**:
+they open the database read-only, run no migrations, and write nothing — no
+events, no claims, no sessions. Call them as often as you need, from any agent.
+
+```bash
+carryctx team status core                      # members, kinds, sessions, active tasks, counts
+carryctx team context core                     # tasks, deps, blockers, checkpoints, decisions
+carryctx team context core --agent-for sub-1   # the same picture narrowed to one member
+```
+
+An agent may hold **several** `in_progress` tasks at once; `claim`/`start`/`assign`
+never fail on a task count. Capacity policy is the commander's or the harness's
+concern.
+
+Because these projections are rebuilt from durable records, record progress and
+checkpoints **as you work** — a subagent that dies silently leaves nothing behind.
+
+Full command surface, JSON shapes, and semantic rules:
+[references/team-coordination.md](references/team-coordination.md).
+
+### 7b. Recording Decisions & Handoffs
 
 Capture architectural decisions and hand off work between agents:
 
@@ -203,7 +253,7 @@ carryctx handoff reject HO-0001 --reason "Not my area"
 carryctx handoff close HO-0001
 ```
 
-### 7b. Full-Text Search Across Project History
+### 7c. Full-Text Search Across Project History
 
 Find prior work by content, not by remembering which branch or task touched it. Searches task titles/descriptions, progress items, checkpoint notes, and decisions, all ranked by relevance:
 
@@ -281,3 +331,5 @@ carryctx doctor --json      # Machine-readable diagnostic output
 4. **Use structured progress items**: Keep `todo`, `done`, and `block` updated during execution steps.
 5. **Checkpoint before stopping**: Always create a checkpoint before yielding control or completing complex multi-step work.
 6. **Run `carryctx doctor` on first use or after upgrade**: Surfaces setup gaps before they cause runtime errors.
+7. **Record durably while working, not at exit**: `team context`, `resume`, and handoffs are rebuilt from persisted progress items, checkpoints, and decisions. Work that was never recorded is indistinguishable from work never done — and a process killed before its final checkpoint leaves nothing for its successor.
+8. **Read team state before dispatching or claiming**: `carryctx team status` and `carryctx team context` cost nothing (read-only, no writes) and are the only reliable statement of who is live and what they hold.
