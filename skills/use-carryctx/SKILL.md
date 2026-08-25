@@ -1,10 +1,16 @@
 ---
 name: use-carryctx
-description: Commander doctrine and full command surface for CarryCtx 0.7.x, the local-first project context engine for coding agents. Load once per main session for any multi-step engineering effort — plan as the commander, assign work through durable carryctx tasks with dependencies and teams, dispatch all implementation to subagents (each preferably isolated in its own Git worktree), and accept results by reading state back from carryctx instead of trusting subagent self-reports. Covers tasks, dependencies, teams, sessions, checkpoints, handoffs, presets/rules/personas, search, events, graph, stats, MCP, doctor, and troubleshooting.
+description: >
+  Coordinate multi-step coding work across agents with CarryCtx, the
+  local-first project context engine. Load once per main session when planning
+  or coordinating engineering work: plan as the commander, assign durable tasks
+  with dependencies, teams, and scopes, dispatch implementation to subagents in
+  isolated Git worktrees, and accept results by reading state back from
+  carryctx instead of trusting subagent self-reports.
 license: MIT
 metadata:
   author: Xuepoo
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Use CarryCtx
@@ -77,47 +83,44 @@ carryctx task create --title "Login form" --depends-on CTX-0002
 carryctx worktree create CTX-0002                        # isolate implementation
 ```
 
-## Command Quick Reference
+## Core Commands
 
-All flags below verified against carryctx 0.7.0. Writes require identity: pass
+All flags verified against carryctx 0.7.0. Writes require identity: pass
 `--agent <name>` (or export `CARRYCTX_AGENT`) — listings never filter by it
 implicitly.
 
-| Action          | Command                                                                                                                | Notes                                                                     |
-| --------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| Initialize      | `carryctx init`                                                                                                        | Config `.carryctx/config.toml`; state in Git common dir                   |
-| Register agent  | `carryctx agent register --name sub-1 --provider opencode --kind subagent --role backend`                              | `--kind`: `commander` \| `subagent`                                       |
-| Bootstrap       | `carryctx session start` then `carryctx resume --compact`                                                              | One ACTIVE session per agent; `--reuse` keeps the live one                |
-| Snapshot        | `carryctx status --compact [--sessions]`                                                                               | Branch, HEAD, active tasks                                                |
-| Create task     | `carryctx task create --title "..." [--priority high] [--team core] [--required-role backend] [--depends-on CTX-0001]` | Planned until strong deps complete                                        |
-| List tasks      | `carryctx task list [--status ready] [--mine] [--limit N]`                                                             | Statuses: planned ready in_progress blocked in_review completed cancelled |
-| Claim / start   | `carryctx task claim CTX-0001` then `carryctx task start CTX-0001`                                                     | Multiple in-progress tasks allowed                                        |
-| Dependency      | `carryctx task depend CTX-0002 --on CTX-0001 [--kind informational]`                                                   | `strong` gates claim/start; `informational` records only                  |
-| File scope      | `carryctx task scope add CTX-0002 src/api/`; `scope list`; `scope conflicts CTX-0002`                                  | Detect overlapping edits before fan-out                                   |
-| Task ↔ team     | `carryctx task team set CTX-0002 --team core` (`unset` to clear)                                                       | Bookkeeping only; never touches lifecycle                                 |
-| Block / unblock | `carryctx task block CTX-0002 --reason "..."` / `unblock CTX-0002`                                                     | Visible in `team context`                                                 |
-| Complete        | `carryctx task complete CTX-0002`                                                                                      | After you verified the result                                             |
-| Progress item   | `carryctx progress todo\|note\|block\|risk "..." --task CTX-0002`                                                      | Durable breadcrumbs                                                       |
-| Resolve item    | `carryctx progress complete PX-0001`                                                                                   |                                                                           |
-| Checkpoint      | `carryctx checkpoint --done "..." --remaining "..." --task CTX-0002`                                                   | Immutable snapshot; also `--blocker/--risk/--note`                        |
-| Decision        | `carryctx decision add --title "..." --rationale "..." --task CTX-0002`                                                | `--rationale` is the searchable why                                       |
-| Create team     | `carryctx team create --name core --commander cmd-1`                                                                   | Commander auto-joins as member                                            |
-| Membership      | `carryctx team member add core --agent sub-1 --role backend`                                                           | `team commander set core --agent X` / `--clear`                           |
-| Team status     | `carryctx team status [core]`                                                                                          | Read-only: members, sessions, active tasks                                |
-| Team context    | `carryctx team context [core] [--agent-for sub-1] [--task CTX-0002]`                                                   | Read-only rebuild from durable records                                    |
-| Worktree create | `carryctx worktree create CTX-0002`                                                                                    | `.worktrees/<task-id>` on branch `carryctx/<task-id>`                     |
-| Worktree remove | `carryctx worktree remove <TASK_REF\|PATH> [--force]`                                                                  | `--force` discards dirty worktrees; `worktree list` for refs              |
-| Handoff create  | `carryctx handoff create --target sub-1 --task CTX-0002 --summary "..."`                                               | Target resolves name, ULID, or role                                       |
-| Handoff inbox   | `carryctx handoff list` then `accept HO-0001 [--claim-task]`                                                           | Default shows pending only; `--all`/`--status` widen                      |
-| Search history  | `carryctx search "<query>" [--type task\|progress\|checkpoint\|decision]`                                              | FTS5 syntax; hits cite owning task                                        |
-| Event audit     | `carryctx event list [--cursor <token>] [--since 1h]`                                                                  | Cursor tokens are opaque; `--agent` filters explicitly                    |
-| Diagnose        | `carryctx doctor [--fix]`                                                                                              | Warnings-only findings still exit 0                                       |
-| Auxiliary       | `carryctx mcp`; `graph scan` / `graph export -t mermaid [--focus src/main.rs]`; `stats --markdown`                     | Stdio MCP server (answers ping); AST dep graph; analytics                 |
+```bash
+# Plan & track
+carryctx task create --title "..." [--priority high] [--team core] \
+    [--required-role backend] [--depends-on CTX-0001]
+carryctx task show CTX-0002                              # full detail + records
+carryctx task claim CTX-0002 && carryctx task start CTX-0002
+carryctx task complete CTX-0002                          # only after verification
+
+# Read team state back (never trust self-reports)
+carryctx team status [core]
+carryctx team context [core] [--agent-for sub-1] [--task CTX-0002]
+
+# Durable breadcrumbs written by subagents as they work
+carryctx progress note|block|risk "..." --task CTX-0002
+carryctx checkpoint --done "..." --remaining "..." --task CTX-0002
+
+# Isolation & continuity
+carryctx worktree create CTX-0002        # .worktrees/<task-id>, branch carryctx/<id>
+carryctx handoff create --agent cmd-1 --target sub-1 --task CTX-0002 --summary "..."
+```
+
+Everything else — dependency kinds (`strong`/`informational`), file scopes and
+conflict detection, task statuses, blockers, decisions, search, event audit,
+presets/rules/personas in `.carryctx/`, error recovery — is documented in the
+references below. Consult them when operating in that area; do not guess flags.
 
 ## References
 
 Read the focused guide when operating in that area:
 
+- [references/command-reference.md](references/command-reference.md) — full
+  command table for all subcommands and flags (verified against 0.7.0).
 - [references/task-lifecycle.md](references/task-lifecycle.md) — states,
   transitions, dependency gating, scopes, team metadata.
 - [references/team-coordination.md](references/team-coordination.md) — team
