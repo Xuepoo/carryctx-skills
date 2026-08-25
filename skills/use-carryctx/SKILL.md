@@ -20,6 +20,12 @@ belong to you and your harness. This skill is loaded once per main session.
 
 Apply at main-session start for any multi-step engineering effort, especially:
 
+> **Prerequisite — run inside the target Git repository.** Every carryctx
+> command must execute from within that project's repo clone (state lives at
+> `<git-common-dir>/carryctx/state.sqlite`). From a non-repo directory every
+> command fails with `GIT_ERROR` exit 4. In multi-repo workspaces, `cd` into
+> each product repository first — state is per-repo, never workspace-wide.
+
 - Planning and splitting an effort into tasks with dependencies and owners.
 - Dispatching implementation to subagents while keeping your own context lean.
 - Running parallel work streams that need isolation (Git worktrees).

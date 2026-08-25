@@ -91,3 +91,11 @@ Shell completions:
 carryctx completions fish > ~/.config/fish/completions/carryctx.fish   # fish
 eval "$(carryctx completions zsh)"                                     # zsh
 ```
+
+## "Not a Git Repository" (GIT_ERROR, exit 4)
+
+Every command must run from inside the project's Git clone — carryctx resolves
+state at `<git-common-dir>/carryctx/state.sqlite` via git discovery. From a
+workspace root that is not itself a repo, all commands fail. Fix: `cd` into the
+product repository (or a linked worktree) first. Multi-repo workspaces hold one
+independent state DB per repository.
