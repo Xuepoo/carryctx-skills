@@ -8,7 +8,7 @@ Every time you start working in this repository, execute the following sequence:
 
 ```bash
 # 1. Register/confirm agent identity
-carryctx agent current --name "claude" \
+carryctx agent current \
   || carryctx agent register --name "claude" --provider "claude-code"
 
 # 2. Start a tracked session
@@ -19,6 +19,7 @@ carryctx resume
 ```
 
 `carryctx resume` will tell you:
+
 - The active task (title, description, status, owner)
 - Recent progress items (todos, blockers, done items)
 - The last checkpoint (what was done, what remains)
@@ -35,6 +36,7 @@ carryctx task start CTX-NNNN            # mark in-progress
 ```
 
 **Task Completion and Cleanup**: When you finish a task, complete it and clean up its associated worktree (if any) to prevent disk bloat:
+
 ```bash
 carryctx task complete CTX-NNNN
 # If you used a separate worktree for this task:
@@ -47,7 +49,7 @@ Log significant steps continuously — do not accumulate changes in implicit mem
 
 ```bash
 carryctx progress todo "Step to do next"
-carryctx progress done "Step just completed"
+carryctx progress note "Step just completed"
 carryctx progress block "Blocker encountered: <description>"
 carryctx progress risk "Potential risk: <description>"
 carryctx progress note "Architectural note worth recording"
@@ -56,6 +58,7 @@ carryctx progress note "Architectural note worth recording"
 ## Checkpointing
 
 Create a checkpoint:
+
 - Before ending any session
 - Before switching tasks or worktrees
 - After completing a meaningful sub-goal
@@ -99,14 +102,14 @@ eval "$(carryctx completions bash)"   # or zsh/fish/powershell
 
 ## Key Commands Reference
 
-| Situation | Command |
-|-----------|---------|
-| Start of session | `carryctx session start && carryctx resume` |
-| What's my task? | `carryctx status` |
-| Mark step done | `carryctx progress done "..."` |
-| Save progress | `carryctx checkpoint --done "..." --remaining "..."` |
-| End of session | `carryctx session end` |
-| Project unhealthy | `carryctx doctor` |
-| New task | `carryctx task create --title "..."` |
-| Parallel work | `carryctx worktree create --task CTX-NNNN` |
-| Find prior work by content | `carryctx search "<query>" --type checkpoint` |
+| Situation                  | Command                                              |
+| -------------------------- | ---------------------------------------------------- |
+| Start of session           | `carryctx session start && carryctx resume`          |
+| What's my task?            | `carryctx status`                                    |
+| Mark step done             | `carryctx progress complete PX-NNNN`                 |
+| Save progress              | `carryctx checkpoint --done "..." --remaining "..."` |
+| End of session             | `carryctx session end`                               |
+| Project unhealthy          | `carryctx doctor`                                    |
+| New task                   | `carryctx task create --title "..."`                 |
+| Parallel work              | `carryctx worktree create CTX-NNNN`                  |
+| Find prior work by content | `carryctx search "<query>" --type checkpoint`        |

@@ -15,55 +15,48 @@ List available skills:
 npx skills add Xuepoo/carryctx-skills --list
 ```
 
-Install all skills for all detected agents:
+Install for all detected agents:
 
 ```bash
 npx skills add Xuepoo/carryctx-skills --all
 ```
 
-Install selected skills for specific agents:
+Install the skill for specific agents:
 
 ```bash
 npx skills add Xuepoo/carryctx-skills \
-  --skill carryctx-core \
-  --skill carryctx-rules \
-  --skill carryctx-workflows \
-  --skill carryctx-personas \
-  --skill carryctx-handoff \
+  --skill use-carryctx \
   --agent codex \
   --agent claude-code \
   --agent cursor \
   --agent github-copilot
 ```
 
-Use one skill without installing it:
+Use it without installing:
 
 ```bash
-npx skills use Xuepoo/carryctx-skills --skill carryctx-core
+npx skills use Xuepoo/carryctx-skills --skill use-carryctx
 ```
 
 The Skills CLI supports GitHub shorthand (`owner/repo`), full GitHub URLs, direct skill paths, local paths, and agent-specific installs. See the upstream CLI README for current options and supported agents: <https://github.com/vercel-labs/skills>.
 
 ## Available Skills
 
-| Skill                    | Description                                                                                                                                                                                    | Location                                                   | Status    |
-| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | --------- |
-| **`carryctx-core`**      | Preserves and restores project context, manages tasks, tracks progress, and saves checkpoints across agent sessions.                                                                           | [`skills/carryctx-core/`](skills/carryctx-core/)           | Available |
-| **`carryctx-rules`**     | Teaches the agent to dynamically load and obey project-specific `.carryctx/rules/`.                                                                                                            | [`skills/carryctx-rules/`](skills/carryctx-rules/)         | Available |
-| **`carryctx-workflows`** | Parses `.carryctx/workflows/` blueprints and automatically breaks down tasks into granular todo lists.                                                                                         | [`skills/carryctx-workflows/`](skills/carryctx-workflows/) | Available |
-| **`carryctx-personas`**  | Enables agents to adopt `.carryctx/personas/` (e.g., Code Reviewer, Architect) and enforce specific code styles.                                                                               | [`skills/carryctx-personas/`](skills/carryctx-personas/)   | Available |
-| **`carryctx-handoff`**   | Produces a handoff-prompt document from CarryCtx state (tasks, checkpoints, decisions, progress) and routes it with `carryctx handoff create` — pairs with the generic `handoff-prompt` skill. | [`skills/carryctx-handoff/`](skills/carryctx-handoff/)     | Available |
+One skill, loaded once per main session, covering the full CarryCtx surface (verified against `carryctx` 0.7.0):
+
+| Skill              | Description                                                                                                                                                                                                                          | Location                                       | Status    |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------- | --------- |
+| **`use-carryctx`** | Commander doctrine and command surface: plan as the commander, assign durable tasks with dependencies and teams, dispatch implementation to subagents in per-task Git worktrees, accept results by reading state back from CarryCtx. | [`skills/use-carryctx/`](skills/use-carryctx/) | Available |
 
 ## 🎁 Presets Library
 
 Not sure how to write your own Personas, Rules, or Workflows? We've got you covered!
 
-This repository includes a `presets/` folder containing out-of-the-box, battle-tested templates. You can simply copy these into your project's `.carryctx/` directory to instantly upgrade your AI team.
+This repository includes a `presets/` folder containing out-of-the-box, battle-tested templates. You can simply copy these into your project's `.carryctx/` directory to instantly upgrade your AI team — or install them through the CLI:
 
 ```bash
-# Example: Copy the strict Code Reviewer persona into your project
-git clone --depth 1 https://github.com/Xuepoo/carryctx-skills.git /tmp/carryctx-skills
-cp -r /tmp/carryctx-skills/presets/personas/reviewer.md .carryctx/personas/
+carryctx preset install /path/to/presets/workflows/bugfix.json
+carryctx preset apply workflows/bugfix
 ```
 
 ## Skill Structure
@@ -77,16 +70,15 @@ carryctx-skills/
 │   ├── rules/
 │   └── workflows/
 └── skills/
-    ├── carryctx-core/        # Basic CLI wrapping
-    │   ├── SKILL.md
-    │   ├── references/
-    │   └── scripts/
-    ├── carryctx-personas/    # Agent role adoption
-    │   └── SKILL.md
-    ├── carryctx-rules/       # Context-aware rule loading
-    │   └── SKILL.md
-    └── carryctx-workflows/   # Blueprint parsing
-        └── SKILL.md
+    └── use-carryctx/         # Commander doctrine + full CLI reference
+        ├── SKILL.md          # Thin router: doctrine + quick reference
+        └── references/       # Focused operational guides
+            ├── task-lifecycle.md
+            ├── team-coordination.md
+            ├── sessions-and-checkpoints.md
+            ├── handoffs.md
+            ├── presets-rules-personas.md
+            └── troubleshooting.md
 ```
 
 ## License
