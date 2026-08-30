@@ -21,6 +21,6 @@ This workflow defines the standard step-by-step process for investigating, repro
 
 1. **Run Full Test Suite**: Verify linting, formatting, unit tests, and integration tests pass.
 2. **Complete Task**: `carryctx task complete <TASK_ID>`
-3. **Review Cleanup Outbox**: `carryctx worktree cleanup run --dry-run`, then `carryctx worktree cleanup run` when policy permits.
+3. **Retry Deferred Cleanup**: Completing the task makes one cleanup attempt. Run `carryctx worktree cleanup run` only for deferred, blocked, or failed requests, or a deliberate manual retry.
 4. **Create Checkpoint**: `carryctx checkpoint --task <TASK_ID> --done "Fixed <BUG_TITLE>" --remaining "PR Merge"`
 5. **Push Branch & PR**: Push branch, open PR, and verify CI checks pass.

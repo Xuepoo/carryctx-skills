@@ -40,7 +40,7 @@ carryctx task start CTX-NNNN            # mark in-progress
 ```bash
 carryctx task complete CTX-NNNN
 carryctx worktree cleanup list
-carryctx worktree cleanup run --dry-run
+# If the automatic attempt was deferred, blocked, or failed, retry it:
 carryctx worktree cleanup run
 ```
 
@@ -113,5 +113,5 @@ eval "$(carryctx completions bash)"   # or zsh/fish/powershell
 | Project unhealthy          | `carryctx doctor`                                    |
 | New task                   | `carryctx task create --title "..."`                 |
 | Parallel work              | `carryctx worktree create CTX-NNNN`                  |
-| Cleanup review             | `carryctx worktree cleanup list` / `run --dry-run`   |
+| Cleanup retry              | `carryctx worktree cleanup list` / `run`             |
 | Find prior work by content | `carryctx search "<query>" --type checkpoint`        |

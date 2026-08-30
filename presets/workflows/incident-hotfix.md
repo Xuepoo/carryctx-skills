@@ -21,6 +21,6 @@ This workflow defines the standard step-by-step process for responding to a prod
 1. **Run Critical Subset**: If the full suite is too slow, run only the tests covering the affected module/path.
 2. **Deploy**: Ship the hotfix through the emergency deploy path and confirm the incident symptom clears.
 3. **Complete Task**: `carryctx task complete <TASK_ID>`
-4. **Review Cleanup Outbox**: Keep the hotfix worktree until the incident is verified; inspect with `carryctx worktree cleanup list` before applying cleanup.
+4. **Review Cleanup Outbox**: Keep the hotfix worktree until the incident is verified; inspect with `carryctx worktree cleanup list`, then retry only deferred, blocked, or failed cleanup with `carryctx worktree cleanup run`.
 5. **Schedule Full-Suite Follow-Up**: `carryctx task create --title "Full-suite verification for hotfix <TASK_ID>" --depends-on <TASK_ID>`
 6. **Record Root Cause Decision**: `carryctx decision add --title "Root cause of <INCIDENT>" --context "<WHAT_TRIGGERED_IT>" --decision "<FIX_APPLIED>" --consequences "<FOLLOW_UP_NEEDED>" --task <TASK_ID>`

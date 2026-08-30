@@ -5,7 +5,7 @@ edit `state.sqlite` by hand.
 
 ## States
 
-`planned`, `ready`, `in_progress`, `blocked`, `in_review`, `completed`,
+`planned`, `ready`, `in_progress`, `blocked`, `review`, `completed`,
 `cancelled`.
 
 A task created with unmet strong dependencies starts as **planned** and rejects
@@ -29,7 +29,7 @@ carryctx task release CTX-0001    # give ownership back (owner must have no acti
 carryctx task start CTX-0001      # planned/ready -> in_progress
 carryctx task block CTX-0001 --reason "Waiting on API spec"
 carryctx task unblock CTX-0001
-carryctx task review CTX-0001     # in_progress -> in_review
+carryctx task review CTX-0001     # in_progress -> review
 carryctx task complete CTX-0001
 carryctx task cancel CTX-0001 --reason "Duplicate of CTX-0007"
 carryctx task reopen CTX-0001     # terminal (completed/cancelled) -> in_progress
@@ -50,7 +50,8 @@ carryctx task undepend CTX-0002 --on CTX-0001
 ```
 
 `--kind` accepts `strong` or `informational` (alias `info`). Strong edges gate
-`claim`/`start` until the prerequisite completes; informational edges are
+`claim`/`start` until the prerequisite is settled (`completed` or `cancelled`);
+informational edges are
 recorded and never gate anything.
 
 ## Scopes
@@ -92,15 +93,17 @@ dispatch logic and check `active_task_count` from `team status`.
 
 ## Completion and Cleanup
 
-Completing or cancelling a task may enqueue cleanup for its bound worktree. The
+Completing or cancelling a task makes one cleanup attempt for its bound worktree.
+If that attempt is deferred, blocked, or fails, the request remains in the durable
+outbox. The
 default policy cleans completed tasks when the worktree is clean and has no active
 session; cancelled tasks default to keeping their worktree. Review and apply the
-outbox explicitly:
+outbox explicitly when retrying deferred, blocked, or failed cleanup, or when
+manually retrying cleanup:
 
 ```bash
 carryctx worktree cleanup list
 carryctx worktree cleanup show CTX-0001
-carryctx worktree cleanup run --dry-run
 carryctx worktree cleanup run
 ```
 

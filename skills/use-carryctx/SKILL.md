@@ -81,8 +81,7 @@ carryctx resume --compact                                # restore prior context
 
 carryctx task create --title "Backend API" --team core --required-role backend
 carryctx task create --title "Login form" --depends-on CTX-0002
-  carryctx worktree create CTX-0002                        # isolate implementation
-  carryctx worktree cleanup run --dry-run                 # inspect durable cleanup outbox
+carryctx worktree create CTX-0002                          # isolate implementation
 ```
 
 ## Core Commands
@@ -97,7 +96,7 @@ carryctx task create --title "..." [--priority high] [--team core] \
     [--required-role backend] [--depends-on CTX-0001]
 carryctx task show CTX-0002                              # full detail + records
 carryctx task claim CTX-0002 && carryctx task start CTX-0002
-carryctx task complete CTX-0002                          # only after verification
+carryctx task complete CTX-0002                          # verifies, then attempts cleanup once
 carryctx task edit CTX-0002 --title "..." --force         # audited terminal correction
 
 # Read team state back (never trust self-reports)
@@ -112,8 +111,7 @@ carryctx checkpoint --done "..." --remaining "..." --task CTX-0002
 carryctx worktree create CTX-0002        # .worktrees/<task-id>, branch carryctx/<id>
 carryctx worktree cleanup list           # durable cleanup outbox
 carryctx worktree cleanup show <REF>     # request by ID or task reference
-carryctx worktree cleanup run --dry-run  # preview; no state or filesystem changes
-carryctx worktree cleanup run            # apply retryable cleanup policy
+carryctx worktree cleanup run            # retry deferred, blocked, or failed cleanup
 carryctx handoff create --agent cmd-1 --target sub-1 --task CTX-0002 --summary "..."
 ```
 

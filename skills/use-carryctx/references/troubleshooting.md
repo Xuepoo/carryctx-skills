@@ -46,8 +46,7 @@ Lingering tasks make every startup signal unreliable.
 
 **"Worktree path '…' already exists"**
 Inspect the durable outbox first: `carryctx worktree cleanup list`, then
-`carryctx worktree cleanup show <REF>`. Preview with
-`carryctx worktree cleanup run --dry-run`; apply retryable requests with
+`carryctx worktree cleanup show <REF>`. Apply retryable requests with
 `carryctx worktree cleanup run`. Direct `worktree remove --force` discards dirty
 or untracked files and should be reserved for deliberate immediate removal.
 

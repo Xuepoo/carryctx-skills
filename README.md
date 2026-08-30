@@ -59,6 +59,8 @@ carryctx preset install /path/to/presets/workflows/bugfix.json
 carryctx preset apply workflows/bugfix
 ```
 
+Preset manifests can be checked locally with `bash scripts/validate-presets.sh`.
+
 ## Skill Structure
 
 ```text
