@@ -1,6 +1,6 @@
 # CarryCtx — Claude Code Integration Guide
 
-This project uses **CarryCtx** (`carryctx`) for persistent project context and continuity management across coding-agent sessions.
+This project uses **CarryCtx** (`carryctx`) for local-first, durable project lifecycle management across commander/subagent sessions. The agent harness executes processes and controls dispatch; CarryCtx persists tasks, roles, sessions, checkpoints, handoffs, cleanup outbox requests, and audit state in `<git-common-dir>/carryctx/state.sqlite`.
 
 ## Mandatory Session Protocol
 
@@ -35,12 +35,13 @@ carryctx task claim CTX-NNNN            # assign to yourself
 carryctx task start CTX-NNNN            # mark in-progress
 ```
 
-**Task Completion and Cleanup**: When you finish a task, complete it and clean up its associated worktree (if any) to prevent disk bloat:
+**Task Completion and Cleanup**: When you finish a task, complete it. v0.8.0 records eligible worktree removal as a durable cleanup request and applies the configured policy; do not manually remove the worktree behind CarryCtx's back:
 
 ```bash
 carryctx task complete CTX-NNNN
-# If you used a separate worktree for this task:
-# git worktree remove .worktrees/CTX-NNNN
+carryctx worktree cleanup list
+# If the automatic attempt was deferred, blocked, or failed, retry it:
+carryctx worktree cleanup run
 ```
 
 ## Logging Progress
@@ -112,4 +113,5 @@ eval "$(carryctx completions bash)"   # or zsh/fish/powershell
 | Project unhealthy          | `carryctx doctor`                                    |
 | New task                   | `carryctx task create --title "..."`                 |
 | Parallel work              | `carryctx worktree create CTX-NNNN`                  |
+| Cleanup retry              | `carryctx worktree cleanup list` / `run`             |
 | Find prior work by content | `carryctx search "<query>" --type checkpoint`        |

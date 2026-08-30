@@ -6,7 +6,7 @@ This workflow defines the standard step-by-step process for investigating, repro
 
 1. **Fetch & Read Traceback**: Never diagnose without reading full un-truncated logs.
 2. **Claim Task**: `carryctx task claim <TASK_ID>`
-3. **Isolate Worktree**: `carryctx worktree create <TASK_ID>`
+3. **Isolate Worktree**: `carryctx worktree create <TASK_ID>` (the harness executes the agent in this worktree)
 4. **Log Initial Findings**: `carryctx progress block "Investigating issue: <ERROR_SUMMARY>"`
 
 ## Phase 2: Dependency Analysis & Fix
@@ -21,5 +21,6 @@ This workflow defines the standard step-by-step process for investigating, repro
 
 1. **Run Full Test Suite**: Verify linting, formatting, unit tests, and integration tests pass.
 2. **Complete Task**: `carryctx task complete <TASK_ID>`
-3. **Create Checkpoint**: `carryctx checkpoint --task <TASK_ID> --done "Fixed <BUG_TITLE>" --remaining "PR Merge"`
-4. **Push Branch & PR**: Push branch, open PR, and verify CI checks pass.
+3. **Retry Deferred Cleanup**: Completing the task makes one cleanup attempt. Run `carryctx worktree cleanup run` only for deferred, blocked, or failed requests, or a deliberate manual retry.
+4. **Create Checkpoint**: `carryctx checkpoint --task <TASK_ID> --done "Fixed <BUG_TITLE>" --remaining "PR Merge"`
+5. **Push Branch & PR**: Push branch, open PR, and verify CI checks pass.

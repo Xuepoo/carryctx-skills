@@ -1,11 +1,11 @@
 # Release Versioning Standard Operating Procedure (SOP)
 
-This workflow defines the standard step-by-step process for cutting a release: pre-release verification, semver bump with changelog, and tag/publish using CarryCtx.
+This workflow defines the standard step-by-step process for cutting a release: pre-release verification, semver bump with changelog, and tag/publish using the harness and CarryCtx's durable lifecycle records. It is not a shipped Completion Gates engine.
 
 ## Phase 1: Pre-Release Verification
 
 1. **Claim Release Task**: `carryctx task claim <TASK_ID>`
-2. **Check for Blockers**: `carryctx status --tasks --all` and confirm no open task depends on or blocks this release.
+2. **Check for Blockers**: `carryctx task list` and `carryctx team status`; confirm no open task depends on or blocks this release.
 3. **Run Full Test/Lint Suite**: Run unit tests, integration tests, and lint/format checks; do not proceed on any failure.
 4. **Log Verification Result**: `carryctx progress note "Pre-release checks passed: tests, lint, no blocking tasks"`
 
@@ -20,5 +20,5 @@ This workflow defines the standard step-by-step process for cutting a release: p
 
 1. **Create Git Tag**: `git tag -a v<X.Y.Z> -m "Release v<X.Y.Z>"`
 2. **Push Tag**: `git push origin v<X.Y.Z>`
-3. **Verify CI/CD Publish**: Confirm the CI/CD publish workflow triggered by the tag completes successfully.
+3. **Verify CI/CD Publish**: The harness or CI system confirms the publish workflow triggered by the tag; CarryCtx records the result but does not execute CI/CD.
 4. **Complete Task**: `carryctx task complete <TASK_ID>`

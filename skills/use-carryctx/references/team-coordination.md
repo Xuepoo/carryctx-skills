@@ -9,9 +9,11 @@ the same team.
 
 CarryCtx answers three questions durably: who is on this team, what is each
 member working on, and what does each member need to know. It ships **no
-scheduler, no worker runtime, no lease/heartbeat machinery**. Spawning
-processes, routing work, retries, concurrency limits, and worktree creation
-belong to the harness (or to you as commander). Read state, decide, act, record.
+scheduler, no worker runtime, and no generic Automation Engine**. The harness
+still executes agents: spawning, routing, retries, concurrency limits, and
+process supervision belong to the harness. CarryCtx persists roles, tasks,
+sessions, checkpoints, handoffs, cleanup outbox, and audit history. Read state,
+decide, act, record.
 
 ## Write Commands
 
@@ -97,7 +99,9 @@ Judgment calls, not fixed rules:
   fanning out supposedly independent work.
 - Re-read `team status` between dispatch rounds; compare `active_session_id`
   and `active_task_count` across calls to notice a subagent that stopped
-  reporting — there is no timeout event.
+  reporting — there is no agent heartbeat or timeout event; the harness owns
+  process timeouts. MCP tool subprocesses are bounded to 60 seconds, with up to
+  5 seconds to drain output after termination.
 
 ## Recording Discipline
 

@@ -5,7 +5,7 @@ edit `state.sqlite` by hand.
 
 ## States
 
-`planned`, `ready`, `in_progress`, `blocked`, `in_review`, `completed`,
+`planned`, `ready`, `in_progress`, `blocked`, `review`, `completed`,
 `cancelled`.
 
 A task created with unmet strong dependencies starts as **planned** and rejects
@@ -22,19 +22,24 @@ carryctx task create --title "Fix parser bug" \
 carryctx task list [--status ready] [--mine] [--assignee <agent>] [--limit N]
 carryctx task show CTX-0001
 carryctx task edit CTX-0001 --title "..." --priority high --description "..."
+carryctx task edit CTX-0001 --title "Corrected title" --force  # terminal task only
 
 carryctx task claim CTX-0001      # take ownership (requires ready)
 carryctx task release CTX-0001    # give ownership back (owner must have no active session)
 carryctx task start CTX-0001      # planned/ready -> in_progress
 carryctx task block CTX-0001 --reason "Waiting on API spec"
 carryctx task unblock CTX-0001
-carryctx task review CTX-0001     # in_progress -> in_review
+carryctx task review CTX-0001     # in_progress -> review
 carryctx task complete CTX-0001
 carryctx task cancel CTX-0001 --reason "Duplicate of CTX-0007"
 carryctx task reopen CTX-0001     # terminal (completed/cancelled) -> in_progress
 ```
 
 There are no `unclaim`, `approve`, `reject`, or `close` commands for tasks.
+
+Editing a terminal task is an exceptional correction. It requires `--force`, is
+attributed to the acting agent, and is recorded in the audit trail. Do not use it
+to bypass lifecycle transitions.
 
 ## Dependencies
 
@@ -45,7 +50,8 @@ carryctx task undepend CTX-0002 --on CTX-0001
 ```
 
 `--kind` accepts `strong` or `informational` (alias `info`). Strong edges gate
-`claim`/`start` until the prerequisite completes; informational edges are
+`claim`/`start` until the prerequisite is settled (`completed` or `cancelled`);
+informational edges are
 recorded and never gate anything.
 
 ## Scopes
@@ -84,3 +90,23 @@ An agent may hold many `in_progress` tasks at once; `claim`, `start`, and
 `task.single_active_task_per_agent` is compatibility-only and non-enforcing.
 Capacity policy belongs to the commander or the harness — enforce it in your own
 dispatch logic and check `active_task_count` from `team status`.
+
+## Completion and Cleanup
+
+Completing or cancelling a task makes one cleanup attempt for its bound worktree.
+If that attempt is deferred, blocked, or fails, the request remains in the durable
+outbox. The
+default policy cleans completed tasks when the worktree is clean and has no active
+session; cancelled tasks default to keeping their worktree. Review and apply the
+outbox explicitly when retrying deferred, blocked, or failed cleanup, or when
+manually retrying cleanup:
+
+```bash
+carryctx worktree cleanup list
+carryctx worktree cleanup show CTX-0001
+carryctx worktree cleanup run
+```
+
+Cleanup is retryable and audited. A jj-colocated live worktree is fail-closed with
+a `jj_colocation` blocker, even when forced; use the jj-native workspace workflow
+instead. Do not manually run `git worktree remove` for a CarryCtx-bound worktree.

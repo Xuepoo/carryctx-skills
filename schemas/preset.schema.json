@@ -2,135 +2,67 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://carryctx.xuepoo.xyz/schemas/preset.schema.json",
   "title": "CarryCtx Preset Manifest",
-  "description": "Schema for CarryCtx Capability Packs (Presets) following a package.json style.",
-  "type": "object",
-  "required": ["name", "version", "description", "carryctx", "permissions"],
-  "properties": {
-    "name": {
-      "type": "string",
-      "description": "The unique name of the preset, typically lowercase with hyphens (e.g., carryctx-preset-rust-cli).",
-      "pattern": "^[a-z0-9-_]+$"
-    },
-    "version": {
-      "type": "string",
-      "description": "Semver version of the preset (e.g., 1.0.0).",
-      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
-    },
-    "description": {
-      "type": "string",
-      "description": "A short, readable description of the preset's purpose."
-    },
-    "author": {
-      "type": "string",
-      "description": "The author or organization publishing the preset."
-    },
-    "license": {
-      "type": "string",
-      "description": "The license of the preset (e.g., MIT)."
-    },
-    "carryctx": {
+  "description": "Schema for the JSON manifests shipped in the CarryCtx preset library.",
+  "oneOf": [
+    {
+      "title": "Structured preset manifest",
       "type": "object",
-      "description": "Engine requirements for CarryCtx.",
-      "required": ["engine"],
+      "required": ["name", "version", "description", "carryctx", "permissions"],
       "properties": {
-        "engine": {
+        "name": { "type": "string", "pattern": "^[a-z0-9_-]+/[a-z0-9_-]+$" },
+        "version": {
           "type": "string",
-          "description": "Semver range for the supported carryctx-cli version (e.g., >=0.2.0)."
-        }
-      }
-    },
-    "profiles": {
-      "type": "object",
-      "description": "Agent capability profiles dictating review standards and output structures.",
-      "additionalProperties": {
-        "type": "string",
-        "description": "Relative path to the profile markdown file (e.g., profiles/reviewer.md)."
-      }
-    },
-    "rules": {
-      "type": "array",
-      "description": "List of relative paths to absolute project constraints and rules.",
-      "items": {
-        "type": "string"
-      }
-    },
-    "workflows": {
-      "type": "object",
-      "description": "Standard Operating Procedures mapping intent to workflow files.",
-      "additionalProperties": {
-        "type": "string",
-        "description": "Relative path to the workflow YAML/Markdown file."
-      }
-    },
-    "skills": {
-      "type": "array",
-      "description": "List of base carryctx skills this preset depends on.",
-      "items": {
-        "type": "string"
-      }
-    },
-    "activation": {
-      "type": "object",
-      "description": "Conditions for automatically recommending or activating this preset.",
-      "properties": {
-        "filePatterns": {
-          "type": "array",
-          "description": "Glob patterns indicating relevant project types (e.g., Cargo.toml).",
-          "items": {
-            "type": "string"
-          }
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
         },
-        "intents": {
-          "type": "array",
-          "description": "Task intents that should trigger this preset (e.g., implement, review).",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
+        "description": { "type": "string", "minLength": 1 },
+        "author": { "type": "string" },
+        "license": { "type": "string" },
+        "carryctx": {
+          "type": "object",
+          "required": ["engine"],
+          "properties": { "engine": { "type": "string", "minLength": 1 } },
+          "additionalProperties": false
+        },
+        "rules": { "type": "array", "items": { "$ref": "#/$defs/file" } },
+        "workflows": { "type": "array", "items": { "$ref": "#/$defs/file" } },
+        "permissions": { "$ref": "#/$defs/permissions" }
+      },
+      "additionalProperties": false
+    },
+    {
+      "title": "Legacy lightweight rule manifest",
+      "type": "object",
+      "required": ["name", "type", "description", "author", "version"],
+      "properties": {
+        "name": { "type": "string", "pattern": "^rules/[a-z0-9_-]+$" },
+        "type": { "const": "rule" },
+        "description": { "type": "string", "minLength": 1 },
+        "author": { "type": "string", "minLength": 1 },
+        "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" }
+      },
+      "additionalProperties": false
+    }
+  ],
+  "$defs": {
+    "file": {
+      "type": "object",
+      "required": ["source", "target", "kind"],
+      "properties": {
+        "source": { "type": "string", "minLength": 1 },
+        "target": { "type": "string", "minLength": 1 },
+        "kind": { "enum": ["rule", "workflow", "persona"] }
+      },
+      "additionalProperties": false
     },
     "permissions": {
       "type": "object",
-      "description": "Crucial supply-chain security constraints defining what this preset is allowed to do.",
+      "required": ["requires_filesystem", "requires_network", "requires_env"],
       "properties": {
-        "filesystem": {
-          "type": "array",
-          "description": "Allowed filesystem access paths (e.g., ['workspace']).",
-          "items": {
-            "type": "string"
-          }
-        },
-        "shell": {
-          "type": "array",
-          "description": "Allowed shell commands the agent can execute autonomously (e.g., ['cargo', 'git']).",
-          "items": {
-            "type": "string"
-          }
-        },
-        "network": {
-          "type": "array",
-          "description": "Allowed domains for external network access.",
-          "items": {
-            "type": "string"
-          }
-        },
-        "dangerous": {
-          "type": "object",
-          "description": "Policies for dangerous actions.",
-          "properties": {
-            "gitPush": {
-              "type": "string",
-              "enum": ["allow", "confirm", "deny"],
-              "default": "confirm"
-            },
-            "publishPackage": {
-              "type": "string",
-              "enum": ["allow", "confirm", "deny"],
-              "default": "confirm"
-            }
-          }
-        }
-      }
+        "requires_filesystem": { "type": "boolean" },
+        "requires_network": { "type": "boolean" },
+        "requires_env": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
     }
   }
 }

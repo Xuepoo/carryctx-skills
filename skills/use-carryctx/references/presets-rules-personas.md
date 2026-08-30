@@ -5,6 +5,11 @@ work: `workflows/` (SOPs), `rules/` (domain constraints), `personas/`
 (behavioral roles). The carryctx-skills repository ships a preset library; copy
 or install what you need.
 
+Rules remain language- and domain-specific presets, not CarryCtx product
+architecture. For example, `typescript-bun` governs TypeScript/Bun projects;
+it does not imply that CarryCtx is implemented with TypeScript, Bun, or a generic
+automation engine.
+
 ## Installing presets via CLI
 
 Presets are installed from a JSON pack, then activated per project:
@@ -12,13 +17,14 @@ Presets are installed from a JSON pack, then activated per project:
 ```bash
 carryctx preset list                          # installed + active
 carryctx preset install /path/to/presets/workflows/bugfix.json
-carryctx preset apply workflows/bugfix        # alias of activate; validates hash + permissions
+carryctx preset apply workflows/bugfix        # alias of activate; verifies lockfile integrity hash
 carryctx preset show /path/to/presets/workflows/bugfix.json   # inspect a preset spec
 ```
 
 Installation records the content hash and permission envelope
-(`filesystem`, `network`, `env`) in `.carryctx/presets.lock`; activation
-validates against it. The apply name is the pack's id (e.g.
+(`filesystem`, `network`, `env`) in `.carryctx/presets.lock`; activation recomputes
+the installed file's SHA-256 hash and verifies it against the lockfile. The apply
+name is the pack's id (e.g.
 `workflows/bugfix`), which may differ from the file name.
 
 ## Workflow blueprints (`.carryctx/workflows/`)
