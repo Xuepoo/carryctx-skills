@@ -2,7 +2,7 @@
 name: use-carryctx
 description: >
   Coordinate multi-step coding work across agents with CarryCtx, the
-  local-first project context engine. Load once per main session when planning
+  local-first durable project lifecycle manager. Load once per main session when planning
   or coordinating engineering work: plan as the commander, assign durable tasks
   with dependencies, teams, and scopes, dispatch implementation to subagents in
   isolated Git worktrees, and accept results by reading state back from
@@ -15,12 +15,13 @@ metadata:
 
 # Use CarryCtx
 
-CarryCtx is a local-first project context engine: durable tasks, sessions,
-checkpoints, decisions, teams, and handoffs stored in SQLite under the Git common
-dir (`<git-common-dir>/carryctx/state.sqlite`), shared by every agent and linked
-worktree on the repository. It is a **management and persistence layer, not an
-orchestration runtime** — spawning processes, retries, and concurrency limits
-belong to you and your harness. This skill is loaded once per main session.
+CarryCtx is local-first durable project lifecycle management for commander/subagent
+teams. It persists tasks, roles, sessions, checkpoints, handoffs, cleanup outbox
+requests, and audit state in `<git-common-dir>/carryctx/state.sqlite`, shared by
+every agent and linked worktree on the repository. The harness still executes
+agents and controls spawning, routing, retries, and concurrency; CarryCtx is the
+management and persistence layer, not a generic Automation Engine or Completion
+Gates system. This skill is loaded once per main session.
 
 ## When to Apply
 
@@ -80,12 +81,13 @@ carryctx resume --compact                                # restore prior context
 
 carryctx task create --title "Backend API" --team core --required-role backend
 carryctx task create --title "Login form" --depends-on CTX-0002
-carryctx worktree create CTX-0002                        # isolate implementation
+  carryctx worktree create CTX-0002                        # isolate implementation
+  carryctx worktree cleanup run --dry-run                 # inspect durable cleanup outbox
 ```
 
 ## Core Commands
 
-All flags verified against carryctx 0.7.0. Writes require identity: pass
+Flags below are verified against CarryCtx v0.8.0. Writes require identity: pass
 `--agent <name>` (or export `CARRYCTX_AGENT`) — listings never filter by it
 implicitly.
 
@@ -96,6 +98,7 @@ carryctx task create --title "..." [--priority high] [--team core] \
 carryctx task show CTX-0002                              # full detail + records
 carryctx task claim CTX-0002 && carryctx task start CTX-0002
 carryctx task complete CTX-0002                          # only after verification
+carryctx task edit CTX-0002 --title "..." --force         # audited terminal correction
 
 # Read team state back (never trust self-reports)
 carryctx team status [core]
@@ -107,6 +110,10 @@ carryctx checkpoint --done "..." --remaining "..." --task CTX-0002
 
 # Isolation & continuity
 carryctx worktree create CTX-0002        # .worktrees/<task-id>, branch carryctx/<id>
+carryctx worktree cleanup list           # durable cleanup outbox
+carryctx worktree cleanup show <REF>     # request by ID or task reference
+carryctx worktree cleanup run --dry-run  # preview; no state or filesystem changes
+carryctx worktree cleanup run            # apply retryable cleanup policy
 carryctx handoff create --agent cmd-1 --target sub-1 --task CTX-0002 --summary "..."
 ```
 
@@ -120,7 +127,7 @@ references below. Consult them when operating in that area; do not guess flags.
 Read the focused guide when operating in that area:
 
 - [references/command-reference.md](references/command-reference.md) — full
-  command table for all subcommands and flags (verified against 0.7.0).
+  command table for all subcommands and flags (verified against v0.8.0).
 - [references/task-lifecycle.md](references/task-lifecycle.md) — states,
   transitions, dependency gating, scopes, team metadata.
 - [references/team-coordination.md](references/team-coordination.md) — team

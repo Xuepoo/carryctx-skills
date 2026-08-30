@@ -1,6 +1,6 @@
 # Troubleshooting
 
-Verified against carryctx 0.7.0. Errors are single JSON envelopes on stderr with
+Verified against CarryCtx v0.8.0. Errors are single JSON envelopes on stderr with
 an error `code`; text mode prints the message.
 
 ## Identity & Sessions
@@ -45,9 +45,11 @@ Lingering tasks make every startup signal unreliable.
 ## Worktrees
 
 **"Worktree path '…' already exists"**
-Use the existing one (`worktree list`), or remove first:
-`carryctx worktree remove <TASK_REF|PATH> [--force]` — `--force` discards dirty
-or untracked files.
+Inspect the durable outbox first: `carryctx worktree cleanup list`, then
+`carryctx worktree cleanup show <REF>`. Preview with
+`carryctx worktree cleanup run --dry-run`; apply retryable requests with
+`carryctx worktree cleanup run`. Direct `worktree remove --force` discards dirty
+or untracked files and should be reserved for deliberate immediate removal.
 
 **Missing directory but still registered**
 `carryctx doctor --prune-stale-worktrees` removes stale registrations; it never
@@ -56,6 +58,16 @@ deletes files.
 **Refs**
 `worktree show`/`unbind` need a full ULID or absolute path; `create`/`remove`
 also accept task display IDs.
+
+**Cleanup is blocked by jj colocation**
+CarryCtx refuses to remove a live worktree when `.jj/` is colocated with `.git/`,
+including forced cleanup. The request remains retryable with blocker
+`jj_colocation`; use `jj workspace` commands instead.
+
+**Terminal task edit is rejected**
+Use `carryctx task edit <TASK_REF> ... --force` only for an intentional correction
+to a completed or cancelled task. The correction is audited; `--force` does not
+change lifecycle state.
 
 ## Diagnostics & Recovery
 
@@ -67,7 +79,8 @@ carryctx doctor --json     # machine-readable
 
 Doctor icons: `✓` pass, `·` informational, `⚠` warning, `✗` error. Only real
 errors fail the command (non-zero); warnings like "No CarryCtx git hooks
-installed" do not.
+installed" do not. MCP tool calls kill a child after 60 seconds and bound pipe
+draining to 5 seconds; restart the MCP client/server after a timeout if needed.
 
 Schema upgrade after CLI update: `carryctx project migrate` (idempotent,
 auto-backup). Database trouble: `carryctx project backup`, then restore with

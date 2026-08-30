@@ -22,6 +22,7 @@ carryctx task create --title "Fix parser bug" \
 carryctx task list [--status ready] [--mine] [--assignee <agent>] [--limit N]
 carryctx task show CTX-0001
 carryctx task edit CTX-0001 --title "..." --priority high --description "..."
+carryctx task edit CTX-0001 --title "Corrected title" --force  # terminal task only
 
 carryctx task claim CTX-0001      # take ownership (requires ready)
 carryctx task release CTX-0001    # give ownership back (owner must have no active session)
@@ -35,6 +36,10 @@ carryctx task reopen CTX-0001     # terminal (completed/cancelled) -> in_progres
 ```
 
 There are no `unclaim`, `approve`, `reject`, or `close` commands for tasks.
+
+Editing a terminal task is an exceptional correction. It requires `--force`, is
+attributed to the acting agent, and is recorded in the audit trail. Do not use it
+to bypass lifecycle transitions.
 
 ## Dependencies
 
@@ -84,3 +89,21 @@ An agent may hold many `in_progress` tasks at once; `claim`, `start`, and
 `task.single_active_task_per_agent` is compatibility-only and non-enforcing.
 Capacity policy belongs to the commander or the harness — enforce it in your own
 dispatch logic and check `active_task_count` from `team status`.
+
+## Completion and Cleanup
+
+Completing or cancelling a task may enqueue cleanup for its bound worktree. The
+default policy cleans completed tasks when the worktree is clean and has no active
+session; cancelled tasks default to keeping their worktree. Review and apply the
+outbox explicitly:
+
+```bash
+carryctx worktree cleanup list
+carryctx worktree cleanup show CTX-0001
+carryctx worktree cleanup run --dry-run
+carryctx worktree cleanup run
+```
+
+Cleanup is retryable and audited. A jj-colocated live worktree is fail-closed with
+a `jj_colocation` blocker, even when forced; use the jj-native workspace workflow
+instead. Do not manually run `git worktree remove` for a CarryCtx-bound worktree.

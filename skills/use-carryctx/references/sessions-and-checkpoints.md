@@ -72,5 +72,8 @@ checkpoint — use deliberately; it discards subsequent changes.
 4. Use granular `progress todo|note|block|risk` between checkpoints; checkpoints summarize, progress items trace.
 5. Do not over-checkpoint; noise drowns signal.
 
-Storage: `<git-common-dir>/carryctx/state.sqlite`, shared across worktrees,
-never pruned automatically (`project prune` archives old completed tasks only).
+Storage: `<git-common-dir>/carryctx/state.sqlite`, shared across worktrees.
+Sessions, checkpoints, tasks, handoffs, cleanup requests, and audit events are
+durable lifecycle records; they are not automatically removed when a terminal or
+agent process closes. `project prune` archives old completed tasks only, while
+worktree cleanup is an explicit, retryable outbox operation.

@@ -5,7 +5,7 @@ Agent skills collection for [CarryCtx](https://github.com/Xuepoo/carryctx) — a
 [![MIT](https://img.shields.io/badge/license-MIT-6366f1.svg)](./LICENSE)
 [![skills.sh](https://skills.sh/b/Xuepoo/carryctx-skills)](https://skills.sh/Xuepoo/carryctx-skills)
 
-This repository is a skills catalog for AI coding agents such as Codex, Claude Code, Cursor, GitHub Copilot, and other agents supported by the [Vercel Labs Skills CLI](https://github.com/vercel-labs/skills).
+This repository is a skills catalog for AI coding agents such as Codex, Claude Code, Cursor, GitHub Copilot, and other agents supported by the [Vercel Labs Skills CLI](https://github.com/vercel-labs/skills). CarryCtx provides local-first, durable project lifecycle management for commander/subagent teams: the harness still executes agents, while CarryCtx persists tasks, roles, sessions, checkpoints, handoffs, cleanup requests, and audit state.
 
 ## Install with `skills`
 
@@ -42,7 +42,7 @@ The Skills CLI supports GitHub shorthand (`owner/repo`), full GitHub URLs, direc
 
 ## Available Skills
 
-One skill, loaded once per main session, covering the full CarryCtx surface (verified against `carryctx` 0.7.0):
+One skill, loaded once per main session, covering the shipped CarryCtx v0.8.0 surface:
 
 | Skill              | Description                                                                                                                                                                                                                          | Location                                       | Status    |
 | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------- | --------- |

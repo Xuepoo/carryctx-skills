@@ -5,6 +5,11 @@ work: `workflows/` (SOPs), `rules/` (domain constraints), `personas/`
 (behavioral roles). The carryctx-skills repository ships a preset library; copy
 or install what you need.
 
+Rules remain language- and domain-specific presets, not CarryCtx product
+architecture. For example, `typescript-bun` governs TypeScript/Bun projects;
+it does not imply that CarryCtx is implemented with TypeScript, Bun, or a generic
+automation engine.
+
 ## Installing presets via CLI
 
 Presets are installed from a JSON pack, then activated per project:
