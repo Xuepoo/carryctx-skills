@@ -96,7 +96,7 @@ carryctx task create --title "..." [--priority high] [--team core] \
     [--required-role backend] [--depends-on CTX-0001]
 carryctx task show CTX-0002                              # full detail + records
 carryctx task claim CTX-0002 && carryctx task start CTX-0002
-carryctx task complete CTX-0002                          # verifies, then attempts cleanup once
+carryctx task complete CTX-0002                          # after agent/harness verification; transitions task and attempts configured cleanup
 carryctx task edit CTX-0002 --title "..." --force         # audited terminal correction
 
 # Read team state back (never trust self-reports)
