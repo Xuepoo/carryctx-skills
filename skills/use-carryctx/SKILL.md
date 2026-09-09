@@ -86,7 +86,7 @@ carryctx worktree create CTX-0002                          # isolate implementat
 
 ## Core Commands
 
-Flags below are verified against CarryCtx v0.8.0. Writes require identity: pass
+Flags below are verified against CarryCtx v0.9.0. Writes require identity: pass
 `--agent <name>` (or export `CARRYCTX_AGENT`) — listings never filter by it
 implicitly.
 
@@ -109,7 +109,7 @@ carryctx checkpoint --done "..." --remaining "..." --task CTX-0002
 
 # Isolation & continuity
 carryctx worktree create CTX-0002        # .worktrees/<task-id>, branch carryctx/<id>
-carryctx export --pack-format dir -o ./pack/  # 0.8.2+ portable state; import re-anchors paths
+carryctx export --pack-format dir -o ./pack/  # 0.9.0 portable state (since 0.8.2); import re-anchors paths
 carryctx worktree cleanup list           # durable cleanup outbox
 carryctx worktree cleanup show <REF>     # request by ID or task reference
 carryctx worktree cleanup run            # retry deferred, blocked, or failed cleanup
@@ -126,7 +126,7 @@ references below. Consult them when operating in that area; do not guess flags.
 Read the focused guide when operating in that area:
 
 - [references/command-reference.md](references/command-reference.md) — full
-  command table for all subcommands and flags (verified against v0.8.0).
+  command table for all subcommands and flags (verified against v0.9.0).
 - [references/task-lifecycle.md](references/task-lifecycle.md) — states,
   transitions, dependency gating, scopes, team metadata.
 - [references/team-coordination.md](references/team-coordination.md) — team

@@ -1,6 +1,6 @@
 # Command Reference
 
-Full command surface, verified against CarryCtx v0.8.0. Writes require identity:
+Full command surface, verified against CarryCtx v0.9.0. Writes require identity:
 pass `--agent <name>` (or export `CARRYCTX_AGENT`) — listings never filter by it
 implicitly.
 
@@ -35,5 +35,5 @@ implicitly.
 | Search history        | `carryctx search "<query>" [--type task\|progress\|checkpoint\|decision]`                                              | FTS5 syntax; hits cite owning task                                                       |
 | Event audit           | `carryctx event list [--cursor <token>] [--since 1h]`                                                                  | Cursor tokens are opaque; `--agent` filters explicitly                                   |
 | Diagnose              | `carryctx doctor [--fix]`                                                                                              | Warnings-only findings still exit 0                                                      |
-| Move machines         | `carryctx export --pack-format dir -o ./pack/` then `carryctx import ./pack/ [--mode replace]`                         | 0.8.2+ portable dir; fresh import re-anchors paths                                       |
+| Move machines         | `carryctx export --pack-format dir -o ./pack/` then `carryctx import ./pack/ [--mode replace]`                         | 0.9.0 portable dir (since 0.8.2); fresh import re-anchors paths                          |
 | Auxiliary             | `carryctx mcp`; `graph scan` / `graph export -t mermaid [--focus src/main.rs]`; `stats --markdown`                     | Stdio MCP; tool subprocesses time out after 60s, output drain is bounded to 5s           |
