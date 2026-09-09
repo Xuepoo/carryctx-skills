@@ -109,6 +109,7 @@ carryctx checkpoint --done "..." --remaining "..." --task CTX-0002
 
 # Isolation & continuity
 carryctx worktree create CTX-0002        # .worktrees/<task-id>, branch carryctx/<id>
+carryctx export --pack-format dir -o ./pack/  # 0.8.2+ portable state; import re-anchors paths
 carryctx worktree cleanup list           # durable cleanup outbox
 carryctx worktree cleanup show <REF>     # request by ID or task reference
 carryctx worktree cleanup run            # retry deferred, blocked, or failed cleanup
