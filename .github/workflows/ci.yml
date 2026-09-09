@@ -1,0 +1,182 @@
+# CarryCtx Skills — continuous integration.
+#
+# What this guards (see research tmp/research/001.md, "skills CI" checklist):
+#   1. Preset manifests validate against schemas/preset.schema.json
+#      (reuses scripts/validate-presets.sh).
+#   2. Every file referenced by a preset manifest exists, and every
+#      presets/*/*.md has a sibling .json manifest (and vice versa).
+#   3. Skill frontmatter (skills/*/SKILL.md) carries at least name +
+#      description, and the name matches its directory.
+#   4. No broken relative links in Markdown docs.
+#   5. Every preset's minimum CarryCtx version (carryctx.engine) is a valid
+#      ">=M.m.p" floor and does not exceed the pinned CLI under test.
+#   6. markdownlint over changed docs (PRs) or all docs (pushes).
+#   7. shellcheck over scripts/**/*.sh AND fenced sh blocks in workflow
+#      presets (extracted with scripts/ci-checks.py, then linted).
+#   8. Command examples: every `carryctx <path> [--flag ...]` snippet in the
+#      docs must resolve against the installed CLI — unknown subcommands or
+#      flags fail the build (e.g. a preset documenting --pack-format after
+#      the flag is removed/renamed).
+#
+# Shared check logic lives in scripts/ci-checks.py (stdlib only, except the
+# schema-fallback branch which needs the pinned `jsonschema` package); this
+# workflow only wires tools, pins, and the install/skip policy.
+#
+# CarryCtx binary requirement: check 8 needs the real CLI. CI installs the
+# pinned release below; a preinstalled `carryctx` on PATH takes precedence.
+# When no binary can be obtained (e.g. offline runner), check 8 exits 0 with
+# a ::notice:: ("skip-with-notice") instead of failing — every other check
+# still runs. Bump CARRYCTX_VERSION together with the CLI release under test.
+#
+# Speed budget: single job, no matrix, no builds — well under 5 minutes.
+
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARRYCTX_VERSION: "0.8.2"
+  CARRYCTX_RELEASE_REPO: "Xuepoo/carryctx"
+  CHECK_JSONSCHEMA_VERSION: "0.38.0"
+  JSONSCHEMA_VERSION: "4.23.0"
+  MARKDOWNLINT_CLI2_VERSION: "0.23.1"
+  SHELLCHECK_VERSION: "0.10.0"
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  checks:
+    name: Checks
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Preset manifests — JSON Schema
+        run: |
+          set -euo pipefail
+          if ! command -v check-jsonschema >/dev/null 2>&1; then
+            echo "check-jsonschema not found; installing pinned ${CHECK_JSONSCHEMA_VERSION}"
+            if python -m pip install --disable-pip-version-check \
+                "check-jsonschema==${CHECK_JSONSCHEMA_VERSION}"; then
+              echo "installed check-jsonschema"
+            else
+              echo "pip install failed; falling back to python jsonschema library"
+              python -m pip install --disable-pip-version-check \
+                "jsonschema==${JSONSCHEMA_VERSION}"
+              python scripts/ci-checks.py schema-fallback
+              exit 0
+            fi
+          fi
+          bash scripts/validate-presets.sh
+
+      - name: Preset manifests — referenced files and md/json pairs
+        run: |
+          set -euo pipefail
+          python scripts/ci-checks.py preset-refs
+
+      - name: Skill frontmatter
+        run: |
+          set -euo pipefail
+          python scripts/ci-checks.py frontmatter
+
+      - name: Relative links
+        run: |
+          set -euo pipefail
+          python scripts/ci-checks.py links
+
+      - name: Minimum CarryCtx version
+        run: |
+          set -euo pipefail
+          python scripts/ci-checks.py min-version
+
+      - name: Markdown lint (changed docs)
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          if [ "${EVENT_NAME}" = "pull_request" ] \
+            && [ -n "${BASE_SHA}" ] \
+            && git cat-file -e "${BASE_SHA}^{commit}" 2>/dev/null; then
+            echo "PR build: linting Markdown changed in ${BASE_SHA}...HEAD"
+            mapfile -t MD_FILES < <(git diff --name-only --diff-filter=ACMR "${BASE_SHA}...HEAD" -- '*.md' || true)
+          else
+            echo "Push build (or unknown base): linting all tracked Markdown"
+            mapfile -t MD_FILES < <(git ls-files '*.md')
+          fi
+          if ((${#MD_FILES[@]} == 0)); then
+            echo "No Markdown files to lint; skipping."
+            exit 0
+          fi
+          printf 'Linting %d Markdown file(s)\n' "${#MD_FILES[@]}"
+          # --no-globs: lint exactly the files above, not the config's **/*.md.
+          npx --yes "markdownlint-cli2@${MARKDOWNLINT_CLI2_VERSION}" --no-globs "${MD_FILES[@]}"
+
+      - name: ShellCheck (scripts and fenced preset blocks)
+        run: |
+          set -euo pipefail
+          if ! command -v shellcheck >/dev/null 2>&1; then
+            echo "Fetching pinned shellcheck v${SHELLCHECK_VERSION}"
+            SC_URL="https://github.com/koalaman/shellcheck/releases/download/v${SHELLCHECK_VERSION}/shellcheck-v${SHELLCHECK_VERSION}.linux.x86_64.tar.xz"
+            curl --fail --show-error --location --retry 3 --retry-delay 2 \
+              --output /tmp/shellcheck.tar.xz "${SC_URL}"
+            tar -xf /tmp/shellcheck.tar.xz -C /tmp
+            SC_BIN="/tmp/shellcheck-v${SHELLCHECK_VERSION}/shellcheck"
+          else
+            SC_BIN="shellcheck"
+          fi
+          "${SC_BIN}" --version
+          shopt -s globstar
+          # Direct file check for committed shell scripts.
+          "${SC_BIN}" -S warning scripts/**/*.sh
+          # Extract-and-lint for fenced sh blocks in workflow presets (e.g. the
+          # pre-push hook embedded in git-backed-sync.md).
+          rm -rf /tmp/fenced-sh
+          python scripts/ci-checks.py extract-shell --out /tmp/fenced-sh
+          if compgen -G "/tmp/fenced-sh/*.sh" > /dev/null; then
+            "${SC_BIN}" -S warning -s sh /tmp/fenced-sh/*.sh
+          else
+            echo "No fenced shell blocks found; skipping extract-and-lint."
+          fi
+
+      - name: Command examples vs installed CLI
+        run: |
+          set -euo pipefail
+          # Best effort: prefer a preinstalled binary, else fetch the pinned
+          # release asset for this runner (linux x86_64). Anything else is a
+          # skip-with-notice, never a failure — see the file header.
+          if command -v carryctx >/dev/null 2>&1; then
+            echo "Using preinstalled $(carryctx --version)"
+          elif curl --fail --show-error --location --retry 3 --retry-delay 2 \
+              --output /tmp/carryctx \
+              "https://github.com/${CARRYCTX_RELEASE_REPO}/releases/download/v${CARRYCTX_VERSION}/carryctx-x86_64-unknown-linux-gnu"; then
+            chmod +x /tmp/carryctx
+            export PATH="/tmp:${PATH}"
+            echo "Installed $(carryctx --version)"
+          else
+            echo "::notice::carryctx binary unavailable; command-example check skipped. It requires CarryCtx >= ${CARRYCTX_VERSION} (see the workflow header for the install source)."
+            exit 0
+          fi
+          if ! carryctx --version | grep -q "${CARRYCTX_VERSION}"; then
+            echo "::warning::installed $(carryctx --version) differs from pinned ${CARRYCTX_VERSION}; flag drift results may not match the pin."
+          fi
+          export CARRYCTX_AGENT="${CARRYCTX_AGENT:-ci}"
+          python scripts/ci-checks.py command-examples
