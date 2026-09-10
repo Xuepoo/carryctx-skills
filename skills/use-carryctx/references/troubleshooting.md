@@ -1,6 +1,6 @@
 # Troubleshooting
 
-Verified against CarryCtx v0.9.0. Errors are single JSON envelopes on stderr with
+Verified against CarryCtx v0.10.0. Errors are single JSON envelopes on stderr with
 an error `code`; text mode prints the message.
 
 ## Identity & Sessions
@@ -67,6 +67,38 @@ including forced cleanup. The request remains retryable with blocker
 Use `carryctx task edit <TASK_REF> ... --force` only for an intentional correction
 to a completed or cancelled task. The correction is audited; `--force` does not
 change lifecycle state.
+
+## Merge & Cross-Clone
+
+State is per clone; only `export` / `import` plus user-run `git push`/`fetch`
+move it between machines. Carryctx touches no network.
+
+**`MERGE_CONFLICTS` (exit 3) on `import --mode merge`**
+Blocking conflicts were staged under `<git-common-dir>/carryctx/merges/<id>/`;
+the live database is untouched. Inspect with `carryctx conflict list` and
+`carryctx conflict show <id>`, then `conflict resolve <id> --ours|--theirs`
+(optionally `--set field=value`) and `conflict apply`. `conflict abort` discards
+the session. `apply` refuses while conflicts remain unless `--skip-open`.
+
+**`RESOURCE_NOT_FOUND` (exit 7) on any `conflict` command**
+No matching active merge session (already `applied`/`aborted`, or wrong
+`--merge <id>`). Run `import --mode merge` again to stage a new session.
+
+**`VALIDATION_FAILED` (exit 8) on `--mode merge`**
+Invalid or tampered bundle, an unknown `--set` field, or `--require-base` with no
+usable ancestor. The live database and refs are unchanged.
+
+**Never push an unredacted snapshot ref to a public repository.**
+`export --snapshot` writes the local-only, non-branch ref `refs/carryctx/local`,
+which a plain `git push` (even `--all`) cannot publish. Publishing unredacted
+state requires an explicit user refspec — use a private state remote, an
+encrypted channel, or exchange pack directories. `refs/heads/carryctx-snapshots`
+is reserved for the redacted publication flow.
+
+**Native `git merge` of snapshot commits.**
+Unsupported: line-level JSONL merges ignore ULIDs, display ids, sequences,
+tombstones, and FK order. Run `carryctx import --from-git <ref> --mode merge` and
+let carryctx write the semantic two-parent merge commit instead.
 
 ## Diagnostics & Recovery
 

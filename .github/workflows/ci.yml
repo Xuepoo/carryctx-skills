@@ -46,7 +46,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  CARRYCTX_VERSION: "0.8.2"
+  CARRYCTX_VERSION: "0.10.0"
   CARRYCTX_RELEASE_REPO: "Xuepoo/carryctx"
   CHECK_JSONSCHEMA_VERSION: "0.38.0"
   JSONSCHEMA_VERSION: "4.23.0"

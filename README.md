@@ -42,7 +42,7 @@ The Skills CLI supports GitHub shorthand (`owner/repo`), full GitHub URLs, direc
 
 ## Available Skills
 
-One skill, loaded once per main session, covering the shipped CarryCtx v0.9.0 surface:
+One skill, loaded once per main session, covering the shipped CarryCtx v0.10.0 surface:
 
 | Skill              | Description                                                                                                                                                                                                                          | Location                                       | Status    |
 | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------- | --------- |

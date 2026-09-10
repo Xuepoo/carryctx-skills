@@ -4,7 +4,7 @@ This repository contains the CarryCtx Agent Skill distribution — documentation
 
 ## Structure
 
-- `skills/use-carryctx/SKILL.md` — Skill entry point: commander doctrine and command quick reference (CarryCtx v0.9.0)
+- `skills/use-carryctx/SKILL.md` — Skill entry point: commander doctrine and command quick reference (CarryCtx v0.10.0)
 - `skills/use-carryctx/references/` — Detailed guides for tasks, teams, sessions/checkpoints, handoffs, presets/rules/personas, and troubleshooting
 - `presets/` — Ready-to-use persona, rule, and workflow templates installable via `carryctx preset install`
 

@@ -10,7 +10,8 @@ description: >
 license: MIT
 metadata:
   author: Xuepoo
-  version: "1.1.0"
+  version: "1.2.0"
+  min_carryctx: "0.10.0"
 ---
 
 # Use CarryCtx
@@ -70,6 +71,12 @@ Supporting rules:
 - **Close what you open.** A task left `in_progress` after its agent stops is
   indistinguishable from active work; end sessions cleanly, checkpoint before
   merging branches away.
+- **Merge state deliberately; transport stays the user's job.** Linked worktrees
+  share one database, so nothing merges between them. Cross-clone state moves
+  through `export` / `import` plus user-run Git transport (`git push`/`fetch`),
+  and concurrent work merges three-way via `import --mode merge` — see
+  [Cross-Clone Sync & Merge](#cross-clone-sync--merge). Never push an unredacted
+  snapshot ref to a public repository.
 
 Bootstrap once, then operate the loop:
 
@@ -86,7 +93,7 @@ carryctx worktree create CTX-0002                          # isolate implementat
 
 ## Core Commands
 
-Flags below are verified against CarryCtx v0.9.0. Writes require identity: pass
+Flags below are verified against CarryCtx v0.10.0. Writes require identity: pass
 `--agent <name>` (or export `CARRYCTX_AGENT`) — listings never filter by it
 implicitly.
 
@@ -109,7 +116,7 @@ carryctx checkpoint --done "..." --remaining "..." --task CTX-0002
 
 # Isolation & continuity
 carryctx worktree create CTX-0002        # .worktrees/<task-id>, branch carryctx/<id>
-carryctx export --pack-format dir -o ./pack/  # 0.9.0 portable state (since 0.8.2); import re-anchors paths
+carryctx export --pack-format dir -o ./pack/  # portable state (since 0.8.2; ctxpack v2 since 0.10.0)
 carryctx worktree cleanup list           # durable cleanup outbox
 carryctx worktree cleanup show <REF>     # request by ID or task reference
 carryctx worktree cleanup run            # retry deferred, blocked, or failed cleanup
@@ -121,12 +128,49 @@ conflict detection, task statuses, blockers, decisions, search, event audit,
 presets/rules/personas in `.carryctx/`, error recovery — is documented in the
 references below. Consult them when operating in that area; do not guess flags.
 
+## Cross-Clone Sync & Merge
+
+State is per clone; linked worktrees share one database. Moving state between
+clones or machines is `export` / `import` plus transport the user runs (`git
+push`/`fetch`, `scp`, …) — carryctx never touches the network. For concurrent
+work, carry the local snapshot DAG on a Git ref and merge three-way:
+
+```bash
+# Clone A: export and commit one snapshot to the local-only ref
+carryctx export --pack-format dir -o ./pack --snapshot   # refs/carryctx/local
+
+# Clone B: fetch (user transport), then merge the snapshot DAG
+git fetch <remote> refs/carryctx/local:refs/remotes/origin/carryctx-local
+carryctx import --from-git refs/remotes/origin/carryctx-local --mode merge \
+    --snapshot-ref=refs/carryctx/local
+
+# Blocking conflicts stage a session and exit 3 (MERGE_CONFLICTS)
+carryctx conflict list
+carryctx conflict show <conflict-id>
+carryctx conflict resolve <conflict-id> --ours|--theirs [--set field=value]
+carryctx conflict apply --snapshot-ref=refs/carryctx/local   # atomic swap
+carryctx conflict abort                                       # discard, DB untouched
+```
+
+- **Never push an unredacted snapshot ref to a public repository.** The default
+  `refs/carryctx/local` is a non-branch local-only ref; carryctx never pushes it,
+  and publishing unredacted state requires an explicit user refspec. The public
+  redacted publication ref `refs/heads/carryctx-snapshots` is reserved. Use a
+  private state remote, an encrypted channel, or exchange pack directories.
+- Merge composes state and takes a verified pre-merge backup, so no `--yes` is
+  required (`--yes` stays reserved for `replace`). `--require-base` refuses a
+  degraded base-less merge with `VALIDATION_FAILED` (exit 8); `--strict-edits`
+  turns row-edit auto-LWW into blocking conflicts.
+- Native `git merge` of snapshot commits is **unsupported** — CarryCtx owns the
+  semantic merge. A clean merge or `conflict apply` with `--snapshot-ref` writes
+  a two-parent merge snapshot commit.
+
 ## References
 
 Read the focused guide when operating in that area:
 
 - [references/command-reference.md](references/command-reference.md) — full
-  command table for all subcommands and flags (verified against v0.9.0).
+  command table for all subcommands and flags (verified against v0.10.0).
 - [references/task-lifecycle.md](references/task-lifecycle.md) — states,
   transitions, dependency gating, scopes, team metadata.
 - [references/team-coordination.md](references/team-coordination.md) — team
