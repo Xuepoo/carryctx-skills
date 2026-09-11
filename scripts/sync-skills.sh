@@ -9,11 +9,12 @@ set -euo pipefail
 # surprises on case-sensitive or sandboxed filesystems.
 #
 # Update policy: expand to sibling `.agents/skills` via this script — the
-# workspace sibling `<workspace>/.agents/skills/use-carryctx` is always the
-# last target and is resolved relative to this repository, so a single
-# `bash scripts/sync-skills.sh` keeps the sibling in sync.
+# workspace sibling `<workspace>/.agents/skills/use-carryctx` and the three
+# sibling project workspaces (bitty-terminal, vectojs, oh-my-mystery) are
+# resolved relative to this repository, so a single
+# `bash scripts/sync-skills.sh` keeps them in sync.
 #
-# 9 targets (including ~/.codex/skills/use-carryctx):
+# 12 targets (including ~/.codex/skills/use-carryctx):
 #   1  ~/.codex/skills/use-carryctx            (Codex)
 #   2  ~/.config/opencode/skills/use-carryctx  (Opencode)
 #   3  ~/.config/pi/skills/use-carryctx        (Pi)
@@ -23,6 +24,9 @@ set -euo pipefail
 #   7  ~/.kiro/skills/use-carryctx             (Kiro)
 #   8  ~/.claude/skills/use-carryctx           (Claude Code)
 #   9  <workspace>/.agents/skills/use-carryctx (workspace sibling)
+#   10 <projects>/bitty-terminal/.agents/skills/use-carryctx (sibling project)
+#   11 <projects>/vectojs/.agents/skills/use-carryctx        (sibling project)
+#   12 <projects>/oh-my-mystery/.agents/skills/use-carryctx  (sibling project)
 
 repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 src="$repo_root/skills/use-carryctx"
@@ -33,6 +37,7 @@ if [ ! -d "$src" ]; then
 fi
 
 workspace_sibling="$(realpath -m "$repo_root/../.agents/skills/use-carryctx")"
+projects_root="$(realpath -m "$repo_root/../..")"
 
 targets=(
 	"$HOME/.codex/skills/use-carryctx"
@@ -44,6 +49,9 @@ targets=(
 	"$HOME/.kiro/skills/use-carryctx"
 	"$HOME/.claude/skills/use-carryctx"
 	"$workspace_sibling"
+	"$projects_root/bitty-terminal/.agents/skills/use-carryctx"
+	"$projects_root/vectojs/.agents/skills/use-carryctx"
+	"$projects_root/oh-my-mystery/.agents/skills/use-carryctx"
 )
 
 if ! command -v rsync >/dev/null 2>&1; then
