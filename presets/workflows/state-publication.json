@@ -1,0 +1,22 @@
+{
+  "name": "workflows/state-publication",
+  "version": "1.0.0",
+  "description": "Publish a redacted, portable snapshot of project state after a merge, and recover a fresh clone from it",
+  "author": "CarryCtx",
+  "license": "MIT",
+  "carryctx": {
+    "engine": ">=0.11.0"
+  },
+  "workflows": [
+    {
+      "source": "presets/workflows/state-publication.md",
+      "target": "workflows/state-publication.md",
+      "kind": "workflow"
+    }
+  ],
+  "permissions": {
+    "requires_filesystem": true,
+    "requires_network": false,
+    "requires_env": []
+  }
+}

@@ -10,8 +10,8 @@ description: >
 license: MIT
 metadata:
   author: Xuepoo
-  version: "1.2.0"
-  min_carryctx: "0.10.0"
+  version: "1.3.0"
+  min_carryctx: "0.11.0"
 ---
 
 # Use CarryCtx
@@ -93,7 +93,7 @@ carryctx worktree create CTX-0002                          # isolate implementat
 
 ## Core Commands
 
-Flags below are verified against CarryCtx v0.10.0. Writes require identity: pass
+Flags below are verified against CarryCtx v0.11.0. Writes require identity: pass
 `--agent <name>` (or export `CARRYCTX_AGENT`) — listings never filter by it
 implicitly.
 
@@ -154,9 +154,15 @@ carryctx conflict abort                                       # discard, DB unto
 
 - **Never push an unredacted snapshot ref to a public repository.** The default
   `refs/carryctx/local` is a non-branch local-only ref; carryctx never pushes it,
-  and publishing unredacted state requires an explicit user refspec. The public
-  redacted publication ref `refs/heads/carryctx-snapshots` is reserved. Use a
-  private state remote, an encrypted channel, or exchange pack directories.
+  and publishing unredacted state requires an explicit user refspec. To share
+  state publicly, publish a redacted artifact instead:
+  `carryctx export --pack-format dir -o ./pack --publication` redacts every table
+  row and `project.json`, stamps `manifest.redacted`, and commits to the fixed
+  `refs/heads/carryctx-snapshots` ref; `git push` moves it. For a private source
+  repo, host the snapshot in a separate mirror repo — see
+  [references/publication-and-mirrors.md](references/publication-and-mirrors.md).
+  Otherwise use a private state remote, an encrypted channel, or exchange pack
+  directories.
 - Merge composes state and takes a verified pre-merge backup, so no `--yes` is
   required (`--yes` stays reserved for `replace`). `--require-base` refuses a
   degraded base-less merge with `VALIDATION_FAILED` (exit 8); `--strict-edits`
@@ -170,7 +176,7 @@ carryctx conflict abort                                       # discard, DB unto
 Read the focused guide when operating in that area:
 
 - [references/command-reference.md](references/command-reference.md) — full
-  command table for all subcommands and flags (verified against v0.10.0).
+  command table for all subcommands and flags (verified against v0.11.0).
 - [references/task-lifecycle.md](references/task-lifecycle.md) — states,
   transitions, dependency gating, scopes, team metadata.
 - [references/team-coordination.md](references/team-coordination.md) — team
@@ -181,5 +187,8 @@ Read the focused guide when operating in that area:
   handoffs, routing documents, accept/reject/close.
 - [references/presets-rules-personas.md](references/presets-rules-personas.md) —
   installing SOPs, domain rules, and personas into `.carryctx/`.
+- [references/publication-and-mirrors.md](references/publication-and-mirrors.md)
+  — publishing a redacted state snapshot, choosing a source-branch ref versus a
+  mirror repository, and recovering a clone from it.
 - [references/troubleshooting.md](references/troubleshooting.md) — error codes,
   recovery, diagnostics.

@@ -1,6 +1,6 @@
 # Troubleshooting
 
-Verified against CarryCtx v0.10.0. Errors are single JSON envelopes on stderr with
+Verified against CarryCtx v0.11.0. Errors are single JSON envelopes on stderr with
 an error `code`; text mode prints the message.
 
 ## Identity & Sessions

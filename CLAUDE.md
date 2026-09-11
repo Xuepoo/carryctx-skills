@@ -35,7 +35,7 @@ carryctx task claim CTX-NNNN            # assign to yourself
 carryctx task start CTX-NNNN            # mark in-progress
 ```
 
-**Task Completion and Cleanup**: When you finish a task, complete it. v0.10.0 records eligible worktree removal as a durable cleanup request (since 0.8.0) and applies the configured policy; do not manually remove the worktree behind CarryCtx's back:
+**Task Completion and Cleanup**: When you finish a task, complete it. v0.11.0 records eligible worktree removal as a durable cleanup request (since 0.8.0) and applies the configured policy; do not manually remove the worktree behind CarryCtx's back:
 
 ```bash
 carryctx task complete CTX-NNNN
