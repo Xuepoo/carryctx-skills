@@ -54,8 +54,9 @@ carryctx team context [core] [--agent-for sub-1] [--task CTX-0002]
 
 Both open the database read-only, run no migrations, write nothing — no events,
 no claims, no session touches. Call them as often as needed, from any agent.
-They currently emit the JSON envelope regardless of `--format`; parse it, do not
-paste it as prose.
+The default `--format text` prints compact one-line summaries, `--format
+markdown` prints GFM tables, and `--json` emits the stable envelope. Agents
+should parse `--json`, not paste text or markdown as prose.
 
 ### `team status`
 
