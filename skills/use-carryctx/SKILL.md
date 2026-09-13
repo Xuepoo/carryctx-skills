@@ -93,7 +93,7 @@ carryctx worktree create CTX-0002                          # isolate implementat
 
 ## Core Commands
 
-Flags below are verified against CarryCtx v0.11.0. Writes require identity: pass
+Flags below are verified against CarryCtx v0.11.4. Writes require identity: pass
 `--agent <name>` (or export `CARRYCTX_AGENT`) — listings never filter by it
 implicitly.
 
@@ -158,7 +158,9 @@ carryctx conflict abort                                       # discard, DB unto
   state publicly, publish a redacted artifact instead:
   `carryctx export --pack-format dir -o ./pack --publication` redacts every table
   row and `project.json`, stamps `manifest.redacted`, and commits to the fixed
-  `refs/heads/carryctx-snapshots` ref; `git push` moves it. For a private source
+  `refs/heads/carryctx-snapshots` ref; since 0.11.1 it also neutralizes
+  host-identifying paths (home prefixes to `~/`, host roots to
+  `***REDACTED-PATH***`); `git push` moves it. For a private source
   repo, host the snapshot in a separate mirror repo — see
   [references/publication-and-mirrors.md](references/publication-and-mirrors.md).
   Otherwise use a private state remote, an encrypted channel, or exchange pack
@@ -176,7 +178,7 @@ carryctx conflict abort                                       # discard, DB unto
 Read the focused guide when operating in that area:
 
 - [references/command-reference.md](references/command-reference.md) — full
-  command table for all subcommands and flags (verified against v0.11.0).
+  command table for all subcommands and flags (verified against v0.11.4).
 - [references/task-lifecycle.md](references/task-lifecycle.md) — states,
   transitions, dependency gating, scopes, team metadata.
 - [references/team-coordination.md](references/team-coordination.md) — team

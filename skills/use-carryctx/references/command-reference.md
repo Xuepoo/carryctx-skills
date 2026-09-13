@@ -1,6 +1,6 @@
 # Command Reference
 
-Full command surface, verified against CarryCtx v0.11.0. Writes require identity:
+Full command surface, verified against CarryCtx v0.11.4. Writes require identity:
 pass `--agent <name>` (or export `CARRYCTX_AGENT`) — listings never filter by it
 implicitly.
 
@@ -40,4 +40,4 @@ implicitly.
 | Publish state         | `carryctx export --pack-format dir -o ./pack/ --publication [--dry-run]`; recover with `carryctx import --from-git <ref> --mode replace` | Redacted artifact on `refs/heads/carryctx-snapshots`; never a merge source; `git push` is user-run |
 | Merge state           | `carryctx import <dir\|--from-git <ref>> --mode merge [--base <ref>] [--require-base] [--strict-edits]`                                  | Three-way merge from the export DAG; conflicts stage and exit 3 (`MERGE_CONFLICTS`)                |
 | Resolve conflicts     | `carryctx conflict list`; `show <id>`; `resolve <id> --ours\|--theirs [--set k=v]`; `apply [--snapshot-ref[=<ref>]]`; `abort`            | Staging lives in `<git-common-dir>/carryctx/merges/<id>/`; `apply` swaps atomically                |
-| Auxiliary             | `carryctx mcp`; `graph scan` / `graph export -t mermaid [--focus src/main.rs]`; `stats --markdown`                                       | Stdio MCP; tool subprocesses time out after 60s, output drain is bounded to 5s                     |
+| Auxiliary             | `carryctx mcp`; `graph scan` / `graph edges <ULID\|name\|suffix>` / `graph export -t mermaid [--focus src/main.rs]`; `stats --markdown`  | Stdio MCP; tool subprocesses time out after 60s, output drain is bounded to 5s                     |
