@@ -4,6 +4,13 @@ CarryCtx can publish a **redacted** snapshot of project state as a portable,
 reviewable Git artifact. Unlike the local-only snapshot ref used for cross-clone
 merging, a publication is safe to push to a public remote: every secret-shaped
 value is replaced before the bundle is written and `manifest.redacted` is set.
+Since 0.11.1 the pass also neutralizes host-identifying paths: user-home
+prefixes (`/home/<user>/`, `/Users/<user>/`, `C:\Users\<user>\`) collapse to
+`~/` with the tail preserved, host roots (`/mnt/**`, `/media/**`,
+`/run/media/**`, `/private/var/**`, `/var/folders/**`) collapse wholly to
+`***REDACTED-PATH***`, applied to every published row, `project.json`, and
+`manifest.source` metadata. URLs, Git SHA-1s, benign slugs, and multibyte text
+are left intact, and the local unredacted snapshot keeps the real paths.
 
 The binary never touches the network. It writes the redacted commit to a local
 ref; moving it anywhere is a user-run `git push`.
@@ -65,7 +72,11 @@ carryctx import --from-git refs/remotes/<remote>/snapshots --mode replace
 `import --from-git <ref>` materializes the ref's tree and runs the normal import
 path. A redacted bundle is accepted by fresh/replace import but **refused as a
 merge source** (`UNSUPPORTED_OPERATION`, exit 10) — its redacted placeholders are
-not real values, so it can never be merged into live state.
+not real values, so it can never be merged into live state. Since 0.11.2 an
+empty local database (no file, no projects table, or zero project rows) is
+initialized from the bundle on both the directory and `--from-git` paths; a
+database that already carries a project row still requires
+`--mode replace --yes`.
 
 ## Guardrails
 

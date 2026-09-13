@@ -28,6 +28,11 @@ user-run `git push`.
    `carryctx export --pack-format dir -o .carryctx/publish --publication`. This
    redacts every table row and `project.json`, stamps `"redacted": true` in
    `manifest.json`, and commits the bundle to `refs/heads/carryctx-snapshots`.
+   Since CarryCtx 0.11.1 the pass also neutralizes host-identifying paths
+   (user-home prefixes collapse to `~/`, host roots such as `/mnt/**` and
+   `/media/**` collapse to `***REDACTED-PATH***`) in every published row,
+   `project.json`, and `manifest.source`; the local unredacted snapshot keeps
+   the real paths.
 2. Preview first with
    `carryctx export --pack-format dir -o .carryctx/publish --publication --dry-run`
    when you want the target ref and commit without writing anything.
